@@ -18,7 +18,6 @@ export const rewriteDescriptions = async description => {
       ?.filter(desc => desc !== '' && desc.length > 10)
       ?.map(desc => desc.trim())
       ?.slice(0, 3);
-    // console.log(description);
     return description;
   } catch (err) {
     console.log(err.response);

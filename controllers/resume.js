@@ -143,14 +143,17 @@ const getUserData = async user_id => {
   };
 };
 
-export const getEngineeringResume = async (req, res) => {
+export const getEngineeringResumeData = async (req, res) => {
   const user_id = req.user._id;
-  const { id } = req.params;
+  const { template_id } = req.params;
   const { rewrite = false } = req.query;
   const userData = await getUserData(user_id);
 
-  if (parseInt(id) >= Object.keys(templates).length)
-    throw new ExpressError(`Template with id: ${id} does not exist`, 404);
+  if (parseInt(template_id) >= Object.keys(templates).length)
+    throw new ExpressError(
+      `Template with id: ${template_id} does not exist`,
+      404
+    );
 
   if (rewrite === 'true') {
     userData.experiences = await Promise.all(
@@ -175,8 +178,19 @@ export const getEngineeringResume = async (req, res) => {
     );
   }
 
-  const resume = templates['engineeringTemplates'][id](userData);
-  console.log(resume);
+  res.status(200).send(userData);
+};
+
+export const loadEngineeringResume = async (req, res) => {
+  const { template_id } = req.params;
+
+  if (parseInt(template_id) >= Object.keys(templates).length)
+    throw new ExpressError(
+      `Template with id: ${template_id} does not exist`,
+      404
+    );
+
+  const resume = templates['engineeringTemplates'][template_id](req.body);
   const pdf = latex(resume);
   pdf.pipe(res);
 };

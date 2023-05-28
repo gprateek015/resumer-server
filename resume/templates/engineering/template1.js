@@ -112,13 +112,13 @@ const addHeadingSection = ({
     ${city}, ${state} \\\\ \\vspace{3pt}
     \\small \\raisebox{-0.1\\height}\\faPhone\\ ${phone} ~ \\href{mailto:${email}}{\\raisebox{-0.2\\height}\\faEnvelope\\ {${email}}} ~
     ${
-      linkedin
-        ? `\\href{${linkedin}}{\\raisebox{-0.2\\height}\\faLinkedin\\ {linkedin}} ~`
+      linkedin.link
+        ? `\\href{${linkedin.link}}{\\raisebox{-0.2\\height}\\faLinkedin\\ {linkedin}} ~`
         : ''
     }
     ${
-      github
-        ? `\\href{${github}}{\\raisebox{-0.2\\height}\\faGithub\\ {github}}`
+      github.link
+        ? `\\href{${github.link}}{\\raisebox{-0.2\\height}\\faGithub\\ {github}}`
         : ''
     }
   \\end{center}

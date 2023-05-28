@@ -1,7 +1,8 @@
 import express from 'express';
 
 import {
-  getEngineeringResume,
+  getEngineeringResumeData,
+  loadEngineeringResume,
   rewriteDescription,
   rewriteStatement
 } from '../controllers/resume.js';
@@ -11,8 +12,12 @@ import catchAsync from '../utilities/catch-async.js';
 const router = express.Router();
 
 router
-  .route('/engineering/:id')
-  .get(authenticateUser, catchAsync(getEngineeringResume));
+  .route('/engineering/:template_id')
+  .get(authenticateUser, catchAsync(getEngineeringResumeData));
+
+router
+  .route('/engineering/:template_id/load')
+  .post(authenticateUser, catchAsync(loadEngineeringResume));
 
 router
   .route('/rewrite-statement')

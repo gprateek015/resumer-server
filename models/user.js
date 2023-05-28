@@ -107,6 +107,10 @@ const userSchema = new Schema(
       enum: ['admin', 'user', 'org_head'],
       default: 'user',
       required: true
+    },
+    resumes: {
+      type: Schema.Types.ObjectId,
+      ref: 'Resume'
     }
   },
   {
