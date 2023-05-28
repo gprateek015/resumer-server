@@ -1,5 +1,5 @@
 import Skill from '../models/skill.js';
-import ExpressError from '../utilities/expressError.js';
+import ExpressError from '../utilities/express-error.js';
 
 export const addNewSkill = async (req, res) => {
   const user_id = req.user._id;

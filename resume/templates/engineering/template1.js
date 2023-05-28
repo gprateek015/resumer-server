@@ -1,4 +1,4 @@
-import { serializedescription } from '../index.js';
+import { serializedescription } from '../../index.js';
 
 const addBeforeResumeText = () => {
   const beforeResumeText = `\\documentclass[letterpaper,11pt]{article}

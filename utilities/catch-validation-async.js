@@ -1,4 +1,4 @@
-import ExpressError from './expressError.js';
+import ExpressError from './express-error.js';
 
 const catchValidationAsync = fun => {
   return async (req, res, next) => {

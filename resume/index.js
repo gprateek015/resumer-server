@@ -1,7 +1,7 @@
-import template1 from './templates/template1.js';
+import engineeringTemplates from './templates/engineering/index.js';
 
 export const serializedescription = point => {
-  const pattern = /[`!@#$%^&*()_\=\[\]{};':"\\|,<>\/?~]/g;
+  const pattern = /[`!@#$%^&*()_\=\[\]{};:\\|<>\/?~]/g;
   const matches = [...point.matchAll(pattern)];
   if (matches) {
     let count = 0;
@@ -17,7 +17,7 @@ export const serializedescription = point => {
 };
 
 const templates = {
-  0: template1
+  engineeringTemplates
 };
 
 export default templates;

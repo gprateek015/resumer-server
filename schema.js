@@ -22,13 +22,13 @@ const uniqueUsername = async username => {
 
 // ------------ User Schemas ------------
 export const userSchema = Joi.object({
+  email: Joi.string().email().required().external(uniqueEmail),
+  username: Joi.string().external(uniqueUsername),
   name: Joi.string().required(),
-  username: Joi.string().required().external(uniqueUsername),
   city: Joi.string(),
   state: Joi.string(),
   phone: Joi.string(),
   gender: Joi.string().valid('male', 'female', 'other'),
-  email: Joi.string().email().required().external(uniqueEmail),
   password: Joi.string().min(6).required(),
   profile_links: Joi.array().items(
     Joi.object({
@@ -48,7 +48,8 @@ export const userSchema = Joi.object({
         .valid('technical_skills', 'dev_tools', 'core_subjects', 'languages')
         .required()
     })
-  )
+  ),
+  invite_code: Joi.string()
 });
 
 export const userUpdateSchema = Joi.object({

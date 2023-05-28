@@ -2,8 +2,9 @@ import latex from 'node-latex';
 
 import User from '../models/user.js';
 import templates from '../resume/index.js';
-import ExpressError from '../utilities/expressError.js';
+import ExpressError from '../utilities/express-error.js';
 import {
+  rewriteAchievements,
   rewriteDescriptions,
   rewriteSentence
 } from '../utilities/text-davinci.js';
@@ -142,7 +143,7 @@ const getUserData = async user_id => {
   };
 };
 
-export const getResume = async (req, res) => {
+export const getEngineeringResume = async (req, res) => {
   const user_id = req.user._id;
   const { id } = req.params;
   const { rewrite = false } = req.query;
@@ -160,20 +161,13 @@ export const getResume = async (req, res) => {
         return experience;
       })
     );
-    userData.educations = await Promise.all(
-      userData.educations.map(async education => {
-        education.description = await rewriteDescriptions(
-          education.description
-        );
-        return education;
-      })
-    );
     userData.projects = await Promise.all(
       userData.projects.map(async project => {
         project.description = await rewriteDescriptions(project.description);
         return project;
       })
     );
+    // userData.achievements = await rewriteAchievements(userData.achievements);
     userData.achievements = await Promise.all(
       userData.achievements.map(
         async achievement => await rewriteSentence(achievement)
@@ -181,7 +175,26 @@ export const getResume = async (req, res) => {
     );
   }
 
-  const resume = templates[id](userData);
+  const resume = templates['engineeringTemplates'][id](userData);
+  console.log(resume);
   const pdf = latex(resume);
   pdf.pipe(res);
+};
+
+export const rewriteStatement = async (req, res) => {
+  const { statement } = req.body;
+  const updatedStatement = await rewriteSentence(statement);
+  res.status(200).send({
+    success: true,
+    statement: updatedStatement
+  });
+};
+
+export const rewriteDescription = async (req, res) => {
+  const { description } = req.body;
+  const updatesDescription = await rewriteDescriptions(description);
+  res.status(200).send({
+    success: true,
+    description: updatesDescription
+  });
 };

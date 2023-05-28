@@ -10,8 +10,8 @@ import {
   validateEducationDelete,
   validateEducationUpdate
 } from '../middleware.js';
-import catchAsync from '../utilities/catchAsync.js';
-import catchValidationAsync from '../utilities/catchValidationAsync.js';
+import catchAsync from '../utilities/catch-async.js';
+import catchValidationAsync from '../utilities/catch-validation-async.js';
 
 const router = express.Router();
 

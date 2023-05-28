@@ -1,9 +1,10 @@
 import referralCodeGenerator from 'referral-code-generator';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
+import { generateFromEmail, generateUsername } from 'unique-username-generator';
 
 import User from '../models/user.js';
-import ExpressError from '../utilities/expressError.js';
+import ExpressError from '../utilities/express-error.js';
 import Skill from '../models/skill.js';
 
 const findOrMakeSkills = (data = []) => {
@@ -45,6 +46,20 @@ export const registerUser = async (req, res) => {
   const saltRounds = 10;
   const hash_password = await bcrypt.hash(req.body.password, saltRounds);
 
+  if (!req.body.username) {
+    let username = generateFromEmail(req.body.email, 3);
+    const user = await User.findOne({ username });
+    if (user) {
+      username = generateUsername();
+    }
+    req.body.username = username;
+  }
+
+  let referred_by = null;
+  if (req.body.invite_code) {
+    referred_by = await User.findOne({ referral_code: req.body.invite_code });
+  }
+
   const skills = await findOrMakeSkills(req.body.skills);
 
   let referral_code,
@@ -67,7 +82,8 @@ export const registerUser = async (req, res) => {
     ...req.body,
     hash_password,
     skills,
-    referral_code
+    referral_code,
+    referred_by
   });
 
   const json_secret_key = process.env.JWT_SECRET_KEY;
@@ -86,7 +102,7 @@ export const registerUser = async (req, res) => {
     user: {
       ...newUser.toJSON(),
       skills: finalSkills,
-      _ord: undefined
+      hash_password: undefined
     },
     token
   });
@@ -164,5 +180,6 @@ export const updateUser = async (req, res) => {
 export default {
   registerUser,
   fetchSelf,
-  loginUser
+  loginUser,
+  updateUser
 };
