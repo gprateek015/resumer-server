@@ -94,10 +94,10 @@ const getUserData = async user_id => {
 
   const linkedin = user.profile_links.find(
     profile => profile.name.toLowerCase() === 'linkedin'
-  );
+  )?.link;
   const github = user.profile_links.find(
     profile => profile.name.toLowerCase() === 'github'
-  );
+  )?.link;
 
   const profile_links = user.profile_links.filter(
     profile =>
