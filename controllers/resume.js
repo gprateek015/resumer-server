@@ -184,7 +184,10 @@ export const getEngineeringResumeData = async (req, res) => {
 export const loadEngineeringResume = async (req, res) => {
   const { template_id } = req.params;
 
-  if (parseInt(template_id) >= Object.keys(templates).length)
+  if (
+    parseInt(template_id) >=
+    Object.keys(templates['engineeringTemplates']).length
+  )
     throw new ExpressError(
       `Template with id: ${template_id} does not exist`,
       404
