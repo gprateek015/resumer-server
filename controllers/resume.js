@@ -94,10 +94,10 @@ const getUserData = async user_id => {
 
   const linkedin = user.profile_links.find(
     profile => profile.name.toLowerCase() === 'linkedin'
-  );
+  )?.link;
   const github = user.profile_links.find(
     profile => profile.name.toLowerCase() === 'github'
-  );
+  )?.link;
 
   const profile_links = user.profile_links.filter(
     profile =>
@@ -184,7 +184,10 @@ export const getEngineeringResumeData = async (req, res) => {
 export const loadEngineeringResume = async (req, res) => {
   const { template_id } = req.params;
 
-  if (parseInt(template_id) >= Object.keys(templates).length)
+  if (
+    parseInt(template_id) >=
+    Object.keys(templates['engineeringTemplates']).length
+  )
     throw new ExpressError(
       `Template with id: ${template_id} does not exist`,
       404

@@ -18,6 +18,7 @@
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.1.0",
     "node-latex": "^3.1.0",
+    "nodemon": "^2.0.22",
     "openai": "^3.2.1",
     "referral-code-generator": "^1.0.8",
     "unique-username-generator": "^1.1.3"
