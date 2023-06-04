@@ -14,7 +14,7 @@ export const rewriteDescriptions = async description => {
       n: 1
     });
     const description = response.data.choices?.[0]?.text
-      ?.split(/[.\n]+/)
+      ?.split(/\. |\n/)
       ?.filter(desc => desc !== '' && desc.length > 10)
       ?.map(desc => desc.trim())
       ?.slice(0, 3);
@@ -52,7 +52,7 @@ export const rewriteAchievements = async achievements => {
       n: 1
     });
     const resp = response.data.choices?.[0]?.text
-      ?.split(/[\n]+/)
+      ?.split(/\. |\n/)
       ?.filter(sent => sent !== '' && sent.length > 10)
       ?.map(desc => desc.trim());
     return resp;
