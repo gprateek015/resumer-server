@@ -145,15 +145,8 @@ const getUserData = async user_id => {
 
 export const getEngineeringResumeData = async (req, res) => {
   const user_id = req.user._id;
-  const { template_id } = req.params;
   const { rewrite = false } = req.query;
   const userData = await getUserData(user_id);
-
-  if (parseInt(template_id) >= Object.keys(templates).length)
-    throw new ExpressError(
-      `Template with id: ${template_id} does not exist`,
-      404
-    );
 
   if (rewrite === 'true') {
     userData.experiences = await Promise.all(

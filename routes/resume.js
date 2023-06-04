@@ -12,7 +12,7 @@ import catchAsync from '../utilities/catch-async.js';
 const router = express.Router();
 
 router
-  .route('/engineering/:template_id')
+  .route('/data')
   .get(authenticateUser, catchAsync(getEngineeringResumeData));
 
 router
