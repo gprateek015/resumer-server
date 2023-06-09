@@ -4,7 +4,7 @@ services:
   server:
     build: .
     ports:
-      - '8000:8000'
+      - '80:8000'
     environment:
       PORT: ${PORT}
       DB_URI: ${DB_URI}
