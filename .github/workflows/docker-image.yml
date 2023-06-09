@@ -13,4 +13,4 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: docker compose --env-file ~/resumer/.env up --build -d
+      run: sudo docker compose --env-file ~/resumer/.env up --build -d
