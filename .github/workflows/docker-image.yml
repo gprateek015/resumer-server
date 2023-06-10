@@ -13,4 +13,9 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: sudo docker compose --env-file ~/resumer/.env up --build -d
+      run: |
+        cd resume-server
+        sudo docker build -t resumer-server .
+        sudo docker compose pull
+        sudo docker compose down
+        sudo docker compse up -d
