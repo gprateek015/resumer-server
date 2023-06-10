@@ -1,6 +1,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import cors from 'cors';
 import { Configuration, OpenAIApi } from 'openai';
 
 import userRouter from './routes/user.js';
@@ -28,6 +29,7 @@ const app = express();
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(cors());
 
 app.use('/user', userRouter);
 app.use('/experience', experienceRouter);
@@ -37,7 +39,7 @@ app.use('/skill', skillRouter);
 app.use('/resume', resumeRouter);
 
 app.get('/', async (req, res) => {
-  res.send('Server up and running');
+  res.status(200).send('Server up and running!');
 });
 
 app.all('*', async (req, res) => {
