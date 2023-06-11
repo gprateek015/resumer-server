@@ -14,7 +14,6 @@ jobs:
     - uses: actions/checkout@v3
     - name: Build the Docker image
       run: |
-        cd resume-server
         sudo docker build -t resumer-server .
         sudo docker compose pull
         sudo docker compose down
