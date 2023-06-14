@@ -1,7 +1,7 @@
 import Project from '../models/project.js';
 
 export const addNewProject = async (req, res) => {
-  const user_id = req.user._id;
+  const user_id = req.user.id;
   const user = req.user;
 
   const newProject = new Project({ ...req.body, user_id });
@@ -27,7 +27,7 @@ export const deleteProject = async (req, res) => {
 
 export const updateProject = async (req, res) => {
   const project = await Project.findOneAndUpdate(
-    { _id: req.body._id },
+    { _id: req.body.id },
     { ...req.body },
     { new: true, runValidators: true }
   );

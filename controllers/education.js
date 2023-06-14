@@ -1,10 +1,9 @@
 import Education from '../models/education.js';
 
 export const addNewEducation = async (req, res) => {
-  const user_id = req.user._id;
   const user = req.user;
 
-  const newEducation = new Education({ ...req.body, user_id });
+  const newEducation = new Education({ ...req.body, user_id: user.id });
   user.educations.push(newEducation);
 
   await newEducation.save();
@@ -27,7 +26,7 @@ export const deleteEducation = async (req, res) => {
 
 export const updateEducation = async (req, res) => {
   const education = await Education.findOneAndUpdate(
-    { _id: req.body._id },
+    { _id: req.body.id },
     { ...req.body },
     { new: true, runValidators: true }
   );

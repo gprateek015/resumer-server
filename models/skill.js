@@ -13,12 +13,18 @@ const skillSchema = new Schema(
       enum: ['technical_skills', 'dev_tools', 'core_subjects', 'languages']
     }
   },
-  { versionKey: 0, toJSON: { virtuals: true } }
+  {
+    versionKey: 0,
+    toJSON: {
+      virtuals: true,
+      transform: (doc, ret) => {
+        ret.id = ret._id;
+        delete ret._id;
+        return ret;
+      }
+    }
+  }
 );
-
-skillSchema.virtual('id').get(function () {
-  return this._id;
-});
 
 const Skill = model('Skill', skillSchema);
 export default Skill;

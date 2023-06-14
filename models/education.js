@@ -48,20 +48,26 @@ const educationSchema = new Schema(
       required: true
     }
   },
-  { versionKey: 0, toJSON: { virtuals: true } }
+  {
+    versionKey: 0,
+    toJSON: {
+      virtuals: true,
+      transform: (doc, ret) => {
+        ret.id = ret._id;
+        delete ret._id;
+        return ret;
+      }
+    }
+  }
 );
 
 educationSchema.post('findOneAndDelete', async function (education, next) {
   const user = await User.findById(education.user_id);
   user.educations = user.educations.filter(exp => {
-    return exp.toString() !== education._id.toString();
+    return exp.toString() !== education.id.toString();
   });
   await user.save();
   next();
-});
-
-educationSchema.virtual('id').get(function () {
-  return this._id;
 });
 
 const Education = model('Education', educationSchema);

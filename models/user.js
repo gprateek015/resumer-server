@@ -108,25 +108,49 @@ const userSchema = new Schema(
       default: 'user',
       required: true
     },
-    resumes: {
-      type: Schema.Types.ObjectId,
-      ref: 'Resume'
-    }
+    resumes: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Resume'
+      }
+    ]
   },
   {
-    toJSON: { virtuals: true },
+    toJSON: {
+      virtuals: true,
+      transform: (doc, ret) => {
+        ret.id = ret._id;
+        delete ret._id;
+        return ret;
+      }
+    },
     versionKey: false,
     toObject: { virtuals: true }
   }
 );
 
-userSchema.virtual('id').get(function () {
-  return this._id;
+userSchema.pre(['find', 'findOne'], function (next) {
+  this.populate([
+    'experiences',
+    'educations',
+    'skills.skill',
+    'projects',
+    'resumes'
+  ]);
+
+  console.log(this);
+
+  next();
 });
 
-userSchema.post(['find', 'findOne'], function (user, next) {
-  // try to delete _id and hash_password fields
-  next();
+userSchema.virtual('resume_list').get(function () {
+  return this.resumes.map(resume => {
+    resume = resume.toJSON();
+    return {
+      id: resume.id.toString(),
+      template_id: resume.template_id
+    };
+  });
 });
 
 const User = model('User', userSchema);

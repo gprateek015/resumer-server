@@ -31,4 +31,6 @@ router
 
 router.route('/self').get(authenticateUser, catchAsync(fetchSelf));
 
+// router.route('/resumes').get(authenticateUser, catchAsync(getSavedResumes));
+
 export default router;

@@ -2,7 +2,7 @@ import Skill from '../models/skill.js';
 import ExpressError from '../utilities/express-error.js';
 
 export const addNewSkill = async (req, res) => {
-  const user_id = req.user._id;
+  const user_id = req.user.id;
   const user = req.user;
 
   const newSkill = new Skill({ ...req.body, user_id });
@@ -28,7 +28,7 @@ export const deleteSkill = async (req, res) => {
 
 export const updateSkill = async (req, res) => {
   const skill = await Skill.findOneAndUpdate(
-    { _id: req.body._id },
+    { _id: req.body.id },
     { ...req.body },
     { new: true, runValidators: true }
   );
@@ -51,7 +51,7 @@ export const getSkills = async (req, res) => {
     .slice((parseInt(page_no) - 1) * 10, parseInt(page_no) * 10)
     .map(skill => {
       const s = skill.toJSON();
-      delete s._id;
+      delete s.id;
       return s;
     });
   res.status(200).send(skillToSend);

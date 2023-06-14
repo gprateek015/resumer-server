@@ -1,7 +1,7 @@
 import Experience from '../models/experience.js';
 
 export const addNewExperience = async (req, res) => {
-  const user_id = req.user._id;
+  const user_id = req.user.id;
   const user = req.user;
 
   const newExperience = new Experience({ ...req.body, user_id });
@@ -27,7 +27,7 @@ export const deleteExperience = async (req, res) => {
 
 export const updateExperience = async (req, res) => {
   const experience = await Experience.findOneAndUpdate(
-    { _id: req.body._id },
+    { _id: req.body.id },
     { ...req.body },
     { new: true, runValidators: true }
   );

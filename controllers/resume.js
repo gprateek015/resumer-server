@@ -8,6 +8,7 @@ import {
   rewriteDescriptions,
   rewriteSentence
 } from '../utilities/text-davinci.js';
+import Resume from '../models/resume.js';
 
 const months = [
   'January',
@@ -144,7 +145,7 @@ const getUserData = async user_id => {
 };
 
 export const getEngineeringResumeData = async (req, res) => {
-  const user_id = req.user._id;
+  const user_id = req.user.id;
   const { rewrite = false } = req.query;
   const userData = await getUserData(user_id);
 
@@ -189,6 +190,68 @@ export const loadEngineeringResume = async (req, res) => {
   const resume = templates['engineeringTemplates'][template_id](req.body);
   const pdf = latex(resume);
   pdf.pipe(res);
+};
+
+export const saveEngineeringResume = async (req, res) => {
+  const { template_id } = req.params;
+
+  if (
+    parseInt(template_id) >=
+    Object.keys(templates['engineeringTemplates']).length
+  )
+    throw new ExpressError(
+      `Template with id: ${template_id} does not exist`,
+      404
+    );
+
+  const user = req.user;
+  const resume = new Resume({
+    data: JSON.stringify(req.body),
+    template_id,
+    template_category: 'engineeringTemplates',
+    user
+  });
+  await resume.save();
+
+  user.resumes = [...(user.resumes || []), resume];
+  await user.save();
+  res.status(200).send({
+    success: true
+  });
+};
+
+export const getResumeDetails = async (req, res) => {
+  const { resume_id } = req.params;
+  const resume = await Resume.findById(resume_id);
+  if (resume && resume.user.toString() === req.user.id.toString()) {
+    res.status(200).send({
+      success: true,
+      resume: {
+        ...resume.toJSON(),
+        data: JSON.parse(resume.data),
+        user: undefined
+      }
+    });
+  } else {
+    res.status(404).send({
+      error: 'Resume not found!'
+    });
+  }
+};
+
+export const deleteResume = async (req, res) => {
+  const { resume_id } = req.params;
+  console.log(req.user);
+  const is_authorsed = req.user.resumes.find(
+    resume => resume.id.toString() === resume_id
+  );
+  if (is_authorsed) {
+    await Resume.findByIdAndDelete(resume_id);
+  }
+
+  res.status(200).send({
+    success: true
+  });
 };
 
 export const rewriteStatement = async (req, res) => {

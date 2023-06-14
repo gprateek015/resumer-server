@@ -38,20 +38,26 @@ const experienceSchema = new Schema(
       required: true
     }
   },
-  { versionKey: false, toJSON: { virtuals: true } }
+  {
+    versionKey: false,
+    toJSON: {
+      virtuals: true,
+      transform: (doc, ret) => {
+        ret.id = ret._id;
+        delete ret._id;
+        return ret;
+      }
+    }
+  }
 );
 
 experienceSchema.post('findOneAndDelete', async function (experience, next) {
   const user = await User.findById(experience.user_id);
   user.experiences = user.experiences.filter(exp => {
-    return exp.toString() !== experience._id.toString();
+    return exp.toString() !== experience.id.toString();
   });
   await user.save();
   next();
-});
-
-experienceSchema.virtual('id').get(function () {
-  return this._id;
 });
 
 const Experience = model('Experience', experienceSchema);

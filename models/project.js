@@ -25,20 +25,26 @@ const projectSchema = new Schema(
       required: true
     }
   },
-  { versionKey: false, toJSON: { virtuals: true } }
+  {
+    versionKey: false,
+    toJSON: {
+      virtuals: true,
+      transform: (doc, ret) => {
+        ret.id = ret._id;
+        delete ret._id;
+        return ret;
+      }
+    }
+  }
 );
 
 projectSchema.post('findOneAndDelete', async function (project, next) {
   const user = await User.findById(project.user_id);
   user.projects = user.projects.filter(exp => {
-    return exp.toString() !== project._id.toString();
+    return exp.toString() !== project.id.toString();
   });
   await user.save();
   next();
-});
-
-projectSchema.virtual('id').get(function () {
-  return this._id;
 });
 
 const Project = model('Project', projectSchema);
