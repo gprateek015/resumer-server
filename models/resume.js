@@ -3,6 +3,9 @@ import User from './user.js';
 
 const resumeSchema = new Schema(
   {
+    filename: {
+      type: String
+    },
     data: {
       type: String,
       required: true

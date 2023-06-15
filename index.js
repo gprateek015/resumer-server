@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import { Configuration, OpenAIApi } from 'openai';
+import { S3Client } from '@aws-sdk/client-s3';
 
 import userRouter from './routes/user.js';
 import experienceRouter from './routes/experience.js';
@@ -24,6 +25,10 @@ const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY
 });
 export const openai = new OpenAIApi(configuration);
+
+export const s3_client = new S3Client({
+  region: 'ap-south-1'
+});
 
 const app = express();
 

@@ -2,12 +2,10 @@ import referralCodeGenerator from 'referral-code-generator';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { generateFromEmail, generateUsername } from 'unique-username-generator';
-import latex from 'node-latex';
 
 import User from '../models/user.js';
 import ExpressError from '../utilities/express-error.js';
 import Skill from '../models/skill.js';
-import templates from '../resume/index.js';
 
 const findOrMakeSkills = (data = []) => {
   return Promise.all(
@@ -112,7 +110,12 @@ export const registerUser = async (req, res) => {
 };
 
 export const fetchSelf = async (req, res) => {
-  const user = req.user;
+  const user = await User.findById(req.user.id).populate([
+    'experiences',
+    'educations',
+    'skills.skill',
+    'projects'
+  ]);
 
   if (!user) {
     throw new ExpressError('User not found', 401);
@@ -127,7 +130,12 @@ export const fetchSelf = async (req, res) => {
 
 export const loginUser = async (req, res) => {
   const { email, password } = req.body;
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email }).populate([
+    'experiences',
+    'educations',
+    'skills.skill',
+    'projects'
+  ]);
   if (user) {
     const match = await bcrypt.compare(password, user.hash_password);
     if (match) {
@@ -161,7 +169,7 @@ export const updateUser = async (req, res) => {
     { _id: user_id },
     { ...req.body, skills },
     { new: true, runValidators: true }
-  );
+  ).populate(['experiences', 'educations', 'skills.skill', 'projects']);
 
   if (!user) {
     throw new ExpressError('User not found', 401);

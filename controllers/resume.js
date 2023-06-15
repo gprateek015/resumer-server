@@ -1,4 +1,7 @@
 import latex from 'node-latex';
+import { PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import concat from 'concat-stream';
 
 import User from '../models/user.js';
 import templates from '../resume/index.js';
@@ -9,6 +12,8 @@ import {
   rewriteSentence
 } from '../utilities/text-davinci.js';
 import Resume from '../models/resume.js';
+
+import { s3_client } from '../index.js';
 
 const months = [
   'January',
@@ -144,7 +149,7 @@ const getUserData = async user_id => {
   };
 };
 
-export const getEngineeringResumeData = async (req, res) => {
+export const getResumeData = async (req, res) => {
   const user_id = req.user.id;
   const { rewrite = false } = req.query;
   const userData = await getUserData(user_id);
@@ -211,6 +216,22 @@ export const saveEngineeringResume = async (req, res) => {
     template_category: 'engineeringTemplates',
     user
   });
+  resume.filename = `${user.name}-${resume.id.substr(0, 2)}`;
+
+  const resumeData = templates['engineeringTemplates'][template_id](req.body);
+  const pdf = latex(resumeData);
+
+  pdf.pipe(
+    concat(async pdfData => {
+      const command = new PutObjectCommand({
+        Bucket: 'resumer-data-files',
+        Key: `resume/${resume.id}.pdf`,
+        Body: pdfData
+      });
+
+      await s3_client.send(command);
+    })
+  );
   await resume.save();
 
   user.resumes = [...(user.resumes || []), resume];
@@ -239,9 +260,39 @@ export const getResumeDetails = async (req, res) => {
   }
 };
 
+export const getAllResumes = async (req, res) => {
+  const user = await User.findById(req.user.id).populate(
+    'resumes',
+    'id filename'
+  );
+  const resumes = await Promise.all(
+    user.resumes.map(async resume => {
+      resume = resume.toJSON();
+
+      const getSignedUrlParams = {
+        Bucket: 'resumer-data-files',
+        Key: `resume/${resume.id}.pdf`
+      };
+
+      const signedUrlCommand = new GetObjectCommand(getSignedUrlParams);
+      const signedUrl = await getSignedUrl(s3_client, signedUrlCommand, {
+        expiresIn: 3600
+      });
+
+      return {
+        id: resume.id.toString(),
+        url: signedUrl,
+        filename: resume.filename
+      };
+    })
+  );
+  res.status(200).send({
+    resumes
+  });
+};
+
 export const deleteResume = async (req, res) => {
   const { resume_id } = req.params;
-  console.log(req.user);
   const is_authorsed = req.user.resumes.find(
     resume => resume.id.toString() === resume_id
   );

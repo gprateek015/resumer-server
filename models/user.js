@@ -1,4 +1,7 @@
 import { Schema, model } from 'mongoose';
+import { GetObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { s3_client } from '../index.js';
 
 const profileLiskSchema = new Schema(
   {
@@ -128,30 +131,6 @@ const userSchema = new Schema(
     toObject: { virtuals: true }
   }
 );
-
-userSchema.pre(['find', 'findOne'], function (next) {
-  this.populate([
-    'experiences',
-    'educations',
-    'skills.skill',
-    'projects',
-    'resumes'
-  ]);
-
-  console.log(this);
-
-  next();
-});
-
-userSchema.virtual('resume_list').get(function () {
-  return this.resumes.map(resume => {
-    resume = resume.toJSON();
-    return {
-      id: resume.id.toString(),
-      template_id: resume.template_id
-    };
-  });
-});
 
 const User = model('User', userSchema);
 export default User;

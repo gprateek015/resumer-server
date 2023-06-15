@@ -2,7 +2,8 @@ import express from 'express';
 
 import {
   deleteResume,
-  getEngineeringResumeData,
+  getAllResumes,
+  getResumeData,
   getResumeDetails,
   loadEngineeringResume,
   rewriteDescription,
@@ -14,9 +15,9 @@ import catchAsync from '../utilities/catch-async.js';
 
 const router = express.Router();
 
-router
-  .route('/data')
-  .get(authenticateUser, catchAsync(getEngineeringResumeData));
+router.route('/').get(authenticateUser, catchAsync(getAllResumes));
+
+router.route('/data').get(authenticateUser, catchAsync(getResumeData));
 
 router
   .route('/engineering/:template_id/load')
