@@ -2,10 +2,10 @@ import express from 'express';
 
 import {
   deleteResume,
-  getAllResumes,
-  getResumeData,
+  getNewResumeData,
   getResumeDetails,
   loadEngineeringResume,
+  loadResume,
   rewriteDescription,
   rewriteStatement,
   saveEngineeringResume
@@ -15,9 +15,7 @@ import catchAsync from '../utilities/catch-async.js';
 
 const router = express.Router();
 
-router.route('/').get(authenticateUser, catchAsync(getAllResumes));
-
-router.route('/data').get(authenticateUser, catchAsync(getResumeData));
+router.route('/data-new').get(authenticateUser, catchAsync(getNewResumeData));
 
 router
   .route('/engineering/:template_id/load')
@@ -28,16 +26,18 @@ router
   .post(authenticateUser, catchAsync(saveEngineeringResume));
 
 router
+  .route('/:resume_id')
+  .get(authenticateUser, catchAsync(getResumeDetails))
+  .delete(authenticateUser, catchAsync(deleteResume));
+
+router.route('/:resume_id/load').get(catchAsync(loadResume));
+
+router
   .route('/rewrite-statement')
   .post(authenticateUser, catchAsync(rewriteStatement));
 
 router
   .route('/rewrite-description')
   .post(authenticateUser, catchAsync(rewriteDescription));
-
-router
-  .route('/:resume_id')
-  .get(authenticateUser, catchAsync(getResumeDetails))
-  .delete(authenticateUser, catchAsync(deleteResume));
 
 export default router;

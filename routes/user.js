@@ -3,7 +3,8 @@ import {
   registerUser,
   fetchSelf,
   loginUser,
-  updateUser
+  updateUser,
+  getPublicProfile
 } from '../controllers/user.js';
 import {
   authenticateUser,
@@ -31,6 +32,6 @@ router
 
 router.route('/self').get(authenticateUser, catchAsync(fetchSelf));
 
-// router.route('/resumes').get(authenticateUser, catchAsync(getSavedResumes));
+router.route('/:username').get(catchAsync(getPublicProfile));
 
 export default router;

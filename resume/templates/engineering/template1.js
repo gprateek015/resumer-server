@@ -302,7 +302,7 @@ const addAchievementsSection = achievements => {
   if (!achievements?.length) return '';
 
   const addAchievement = achievement => {
-    return `\\resumeItem {${achievement}}`;
+    return `\\resumeItem {${serializedescription(achievement)}}`;
   };
 
   let section = `\\section{Achievements and Extra Curriculum }

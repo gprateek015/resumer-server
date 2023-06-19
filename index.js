@@ -48,14 +48,13 @@ app.get('/', async (req, res) => {
 });
 
 app.all('*', async (req, res) => {
-  res.status(404).send({ success: false, message: 'Url not found!' });
+  res.status(404).send({ error: 'Url not found!' });
 });
 
 app.use((err, req, res, next) => {
   const { status_code = 500 } = err;
   if (!err.error) err.error = 'internal_server_error';
   res.status(status_code).send({
-    success: false,
     error: err.error
   });
 });

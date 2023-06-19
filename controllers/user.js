@@ -124,7 +124,7 @@ export const fetchSelf = async (req, res) => {
 
   res.status(200).send({
     success: true,
-    user: { ...user.toJSON(), skills, resumes: undefined }
+    user: { ...user.toJSON(), skills, hash_password: undefined }
   });
 };
 
@@ -184,6 +184,37 @@ export const updateUser = async (req, res) => {
       skills: finalSkills,
       hash_password: undefined,
       resumes: undefined
+    }
+  });
+};
+
+export const getPublicProfile = async (req, res) => {
+  const { username } = req.params;
+  const user = await User.findOne({ username }).populate([
+    'experiences',
+    'educations',
+    'skills.skill',
+    'projects'
+  ]);
+
+  if (!user) {
+    throw new ExpressError('User not found', 401);
+  }
+  const skills = formatSkills(user.skills);
+
+  res.status(200).send({
+    success: true,
+    user: {
+      ...user.toJSON(),
+      skills,
+      resumes: [
+        user?.resumes?.find(resume => resume === user.default_resume_id) ||
+          user.resumes?.[0]
+      ],
+      hash_password: undefined,
+      referral_code: undefined,
+      referred_by: undefined,
+      user_role: undefined
     }
   });
 };

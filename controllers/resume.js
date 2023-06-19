@@ -149,7 +149,7 @@ const getUserData = async user_id => {
   };
 };
 
-export const getResumeData = async (req, res) => {
+export const getNewResumeData = async (req, res) => {
   const user_id = req.user.id;
   const { rewrite = false } = req.query;
   const userData = await getUserData(user_id);
@@ -217,21 +217,6 @@ export const saveEngineeringResume = async (req, res) => {
     user
   });
   resume.filename = `${user.name}-${resume.id.substr(0, 2)}`;
-
-  const resumeData = templates['engineeringTemplates'][template_id](req.body);
-  const pdf = latex(resumeData);
-
-  pdf.pipe(
-    concat(async pdfData => {
-      const command = new PutObjectCommand({
-        Bucket: 'resumer-data-files',
-        Key: `resume/${resume.id}.pdf`,
-        Body: pdfData
-      });
-
-      await s3_client.send(command);
-    })
-  );
   await resume.save();
 
   user.resumes = [...(user.resumes || []), resume];
@@ -254,41 +239,8 @@ export const getResumeDetails = async (req, res) => {
       }
     });
   } else {
-    res.status(404).send({
-      error: 'Resume not found!'
-    });
+    throw new ExpressError('Resume not found!', 404);
   }
-};
-
-export const getAllResumes = async (req, res) => {
-  const user = await User.findById(req.user.id).populate(
-    'resumes',
-    'id filename'
-  );
-  const resumes = await Promise.all(
-    user.resumes.map(async resume => {
-      resume = resume.toJSON();
-
-      const getSignedUrlParams = {
-        Bucket: 'resumer-data-files',
-        Key: `resume/${resume.id}.pdf`
-      };
-
-      const signedUrlCommand = new GetObjectCommand(getSignedUrlParams);
-      const signedUrl = await getSignedUrl(s3_client, signedUrlCommand, {
-        expiresIn: 3600
-      });
-
-      return {
-        id: resume.id.toString(),
-        url: signedUrl,
-        filename: resume.filename
-      };
-    })
-  );
-  res.status(200).send({
-    resumes
-  });
 };
 
 export const deleteResume = async (req, res) => {
@@ -303,6 +255,20 @@ export const deleteResume = async (req, res) => {
   res.status(200).send({
     success: true
   });
+};
+
+export const loadResume = async (req, res) => {
+  const { resume_id } = req.params;
+  const resume = await Resume.findById(resume_id);
+  if (resume) {
+    const tex = templates[resume.template_category][resume.template_id](
+      JSON.parse(resume.data)
+    );
+    const pdf = latex(tex);
+    pdf.pipe(res);
+  } else {
+    throw new ExpressError('Resume not found!', 404);
+  }
 };
 
 export const rewriteStatement = async (req, res) => {

@@ -244,7 +244,7 @@ const addAchievementsSection = achievements => {
   if (!achievements?.length) return '';
 
   const addAchievement = achievement => {
-    return `\\item {${achievement}}`;
+    return `\\item {${serializedescription(achievement)}}`;
   };
 
   let section = `\\section{Achievements }

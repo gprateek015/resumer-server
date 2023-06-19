@@ -116,7 +116,10 @@ const userSchema = new Schema(
         type: Schema.Types.ObjectId,
         ref: 'Resume'
       }
-    ]
+    ],
+    default_resume_id: {
+      type: String
+    }
   },
   {
     toJSON: {

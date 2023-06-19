@@ -33,9 +33,7 @@ export const authenticateUser = async (req, res, next) => {
       throw new Error();
     }
   } catch (error) {
-    res
-      .status(401)
-      .send({ success: false, message: 'User is not authenticated.' });
+    res.status(401).send({ error: 'User is not authenticated.' });
   }
 };
 
