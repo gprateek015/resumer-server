@@ -21,7 +21,9 @@ router
     authenticateUser,
     catchValidationAsync(validateProject),
     catchAsync(addNewProject)
-  )
+  );
+router
+  .route('/:project_id')
   .delete(
     authenticateUser,
     catchValidationAsync(validateProjectDelete),

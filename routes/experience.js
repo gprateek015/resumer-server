@@ -21,7 +21,9 @@ router
     authenticateUser,
     catchValidationAsync(validateExperience),
     catchAsync(addNewExperience)
-  )
+  );
+router
+  .route('/:experience_id')
   .delete(
     authenticateUser,
     catchValidationAsync(validateExperienceDelete),

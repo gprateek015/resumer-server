@@ -6,6 +6,7 @@ import { generateFromEmail, generateUsername } from 'unique-username-generator';
 import User from '../models/user.js';
 import ExpressError from '../utilities/express-error.js';
 import Skill from '../models/skill.js';
+import { fetchSelfDB, registerUserDB } from '../db/user.js';
 
 const findOrMakeSkills = (data = []) => {
   return Promise.all(
@@ -43,8 +44,19 @@ const formatSkills = (skills = []) =>
   }));
 
 export const registerUser = async (req, res) => {
+  const {
+    name,
+    email,
+    password,
+    city,
+    state,
+    phone,
+    gender,
+    achievements,
+    profile_links
+  } = req.body;
   const saltRounds = 10;
-  const hash_password = await bcrypt.hash(req.body.password, saltRounds);
+  const hash_password = await bcrypt.hash(password, saltRounds);
 
   if (!req.body.username) {
     let username = generateFromEmail(req.body.email, 3);
@@ -62,28 +74,23 @@ export const registerUser = async (req, res) => {
 
   const skills = await findOrMakeSkills(req.body.skills);
 
-  let referral_code,
-    tries = 10;
+  const referral_code = referralCodeGenerator.alphaNumeric('lowercase', 4, 3);
 
-  while (tries) {
-    const code = referralCodeGenerator.alphaNumeric('lowercase', 4, 3);
-    const user = await User.find({ referral_code: code });
-    referral_code = code;
-    if (!user) break;
-    if (tries === 0) {
-      res.status(500).send('Maximum users limit is reached!');
-      return;
-    } else {
-      tries -= 1;
-    }
-  }
-
-  const newUser = new User({
-    ...req.body,
+  const newUser = registerUserDB({
+    name,
+    email,
+    password,
+    username: req.body.username,
+    city,
+    state,
+    phone,
+    gender,
+    achievements,
     hash_password,
     skills,
     referral_code,
-    referred_by
+    referred_by,
+    profile_links
   });
 
   const json_secret_key = process.env.JWT_SECRET_KEY;
@@ -110,37 +117,28 @@ export const registerUser = async (req, res) => {
 };
 
 export const fetchSelf = async (req, res) => {
-  const user = await User.findById(req.user.id).populate([
-    'experiences',
-    'educations',
-    'skills.skill',
-    'projects'
-  ]);
+  const { user } = req;
+  const userData = await fetchSelfDB({ user_id: user.id });
 
-  if (!user) {
+  if (!userData) {
     throw new ExpressError('User not found', 401);
   }
-  const skills = formatSkills(user.skills);
+  const skills = formatSkills(userData.skills);
 
   res.status(200).send({
     success: true,
-    user: { ...user.toJSON(), skills, hash_password: undefined }
+    user: { ...userData.toJSON(), skills, hash_password: undefined }
   });
 };
 
 export const loginUser = async (req, res) => {
   const { email, password } = req.body;
-  const user = await User.findOne({ email }).populate([
-    'experiences',
-    'educations',
-    'skills.skill',
-    'projects'
-  ]);
+  const user = fetchSelfDB({ email });
   if (user) {
     const match = await bcrypt.compare(password, user.hash_password);
     if (match) {
       const json_secret_key = process.env.JWT_SECRET_KEY;
-      const token = jwt.sign(user.id, json_secret_key);
+      const token = jwt.sign(user.id.toString(), json_secret_key);
 
       const skills = formatSkills(user.skills);
 
@@ -162,14 +160,20 @@ export const loginUser = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   const user_id = req.user.id;
+  const { city, state, phone, gender, achievements, profile_links } = req.body;
 
   const skills = await findOrMakeSkills(req.body.skills);
 
-  const user = await User.findOneAndUpdate(
-    { _id: user_id },
-    { ...req.body, skills },
-    { new: true, runValidators: true }
-  ).populate(['experiences', 'educations', 'skills.skill', 'projects']);
+  const user = await updateUserDB({
+    user_id,
+    city,
+    state,
+    phone,
+    gender,
+    achievements,
+    profile_links,
+    skills
+  });
 
   if (!user) {
     throw new ExpressError('User not found', 401);
@@ -190,12 +194,7 @@ export const updateUser = async (req, res) => {
 
 export const getPublicProfile = async (req, res) => {
   const { username } = req.params;
-  const user = await User.findOne({ username }).populate([
-    'experiences',
-    'educations',
-    'skills.skill',
-    'projects'
-  ]);
+  const user = await fetchSelfDB({ username });
 
   if (!user) {
     throw new ExpressError('User not found', 401);

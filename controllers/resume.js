@@ -14,6 +14,12 @@ import {
 import Resume from '../models/resume.js';
 
 import { s3_client } from '../index.js';
+import {
+  deleteResumeDB,
+  getResumeDetailsDB,
+  saveResumeDB,
+  updateResumeDetailsDB
+} from '../db/resume.js';
 
 const months = [
   'January',
@@ -152,27 +158,32 @@ const getUserData = async user_id => {
 export const getNewResumeData = async (req, res) => {
   const user_id = req.user.id;
   const { rewrite = false } = req.query;
+  const { job_description } = req.body;
   const userData = await getUserData(user_id);
 
   if (rewrite === 'true') {
     userData.experiences = await Promise.all(
       userData.experiences.map(async experience => {
         experience.description = await rewriteDescriptions(
-          experience.description
+          experience.description,
+          job_description
         );
         return experience;
       })
     );
     userData.projects = await Promise.all(
       userData.projects.map(async project => {
-        project.description = await rewriteDescriptions(project.description);
+        project.description = await rewriteDescriptions(
+          project.description,
+          job_description
+        );
         return project;
       })
     );
     // userData.achievements = await rewriteAchievements(userData.achievements);
     userData.achievements = await Promise.all(
       userData.achievements.map(
-        async achievement => await rewriteSentence(achievement)
+        async achievement => await rewriteSentence(achievement, job_description)
       )
     );
   }
@@ -209,18 +220,27 @@ export const saveEngineeringResume = async (req, res) => {
       404
     );
 
-  const user = req.user;
-  const resume = new Resume({
-    data: JSON.stringify(req.body),
+  const { user } = req;
+  await saveResume({
+    user,
     template_id,
     template_category: 'engineeringTemplates',
-    user
+    data: JSON.stringify(req.body)
   });
-  resume.filename = `${user.name}-${resume.id.substr(0, 2)}`;
-  await resume.save();
 
-  user.resumes = [...(user.resumes || []), resume];
-  await user.save();
+  res.status(200).send({
+    success: true
+  });
+};
+
+export const updateResume = async (req, res) => {
+  const { resume_id } = req.params;
+  const { user } = req;
+  await updateResumeDetailsDB({
+    resume_id,
+    user_id: user.id,
+    data: JSON.stringify(req.body)
+  });
   res.status(200).send({
     success: true
   });
@@ -228,7 +248,8 @@ export const saveEngineeringResume = async (req, res) => {
 
 export const getResumeDetails = async (req, res) => {
   const { resume_id } = req.params;
-  const resume = await Resume.findById(resume_id);
+  const resume = await getResumeDetailsDB({ resume_id });
+
   if (resume && resume.user.toString() === req.user.id.toString()) {
     res.status(200).send({
       success: true,
@@ -248,10 +269,12 @@ export const deleteResume = async (req, res) => {
   const is_authorsed = req.user.resumes.find(
     resume => resume.id.toString() === resume_id
   );
-  if (is_authorsed) {
-    await Resume.findByIdAndDelete(resume_id);
+
+  if (!is_authorsed) {
+    throw new ExpressError('You are not authorised to delete the resume', 401);
   }
 
+  await deleteResumeDB({ resume_id });
   res.status(200).send({
     success: true
   });
@@ -259,11 +282,13 @@ export const deleteResume = async (req, res) => {
 
 export const loadResume = async (req, res) => {
   const { resume_id } = req.params;
-  const resume = await Resume.findById(resume_id);
+  const resume = await getResumeDetailsDB({ resume_id });
+
   if (resume) {
     const tex = templates[resume.template_category][resume.template_id](
       JSON.parse(resume.data)
     );
+
     const pdf = latex(tex);
     pdf.pipe(res);
   } else {
@@ -272,8 +297,8 @@ export const loadResume = async (req, res) => {
 };
 
 export const rewriteStatement = async (req, res) => {
-  const { statement } = req.body;
-  const updatedStatement = await rewriteSentence(statement);
+  const { statement, job_description } = req.body;
+  const updatedStatement = await rewriteSentence(statement, job_description);
   res.status(200).send({
     success: true,
     statement: updatedStatement
@@ -281,8 +306,11 @@ export const rewriteStatement = async (req, res) => {
 };
 
 export const rewriteDescription = async (req, res) => {
-  const { description } = req.body;
-  const updatesDescription = await rewriteDescriptions(description);
+  const { description, job_description } = req.body;
+  const updatesDescription = await rewriteDescriptions(
+    description,
+    job_description
+  );
   res.status(200).send({
     success: true,
     description: updatesDescription

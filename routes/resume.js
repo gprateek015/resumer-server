@@ -15,7 +15,7 @@ import catchAsync from '../utilities/catch-async.js';
 
 const router = express.Router();
 
-router.route('/data-new').get(authenticateUser, catchAsync(getNewResumeData));
+router.route('/data-new').post(authenticateUser, catchAsync(getNewResumeData));
 
 router
   .route('/engineering/:template_id/load')

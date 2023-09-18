@@ -1,13 +1,33 @@
-import Education from '../models/education.js';
+import {
+  addNewEducationDB,
+  deleteEducationDB,
+  updateEducationDB
+} from '../db/education.js';
 
 export const addNewEducation = async (req, res) => {
-  const user = req.user;
+  const { user } = req;
+  const {
+    level,
+    institute_name,
+    start_year,
+    end_year,
+    score,
+    specialisation,
+    maximum_score,
+    scoring_type
+  } = req.body;
 
-  const newEducation = new Education({ ...req.body, user_id: user.id });
-  user.educations.push(newEducation);
-
-  await newEducation.save();
-  await user.save();
+  const newEducation = await addNewEducationDB({
+    user,
+    level,
+    institute_name,
+    start_year,
+    end_year,
+    score,
+    specialisation,
+    maximum_score,
+    scoring_type
+  });
 
   res.status(200).send({
     success: true,
@@ -16,8 +36,10 @@ export const addNewEducation = async (req, res) => {
 };
 
 export const deleteEducation = async (req, res) => {
-  const edu_id = req.body.education_id;
-  await Education.findOneAndDelete({ _id: edu_id });
+  const { education_id } = req.params;
+  const { user } = req;
+
+  await deleteEducationDB({ education_id, user_id: user.id });
 
   res.status(200).send({
     success: true
@@ -25,11 +47,31 @@ export const deleteEducation = async (req, res) => {
 };
 
 export const updateEducation = async (req, res) => {
-  const education = await Education.findOneAndUpdate(
-    { _id: req.body.id },
-    { ...req.body },
-    { new: true, runValidators: true }
-  );
+  const { education_id } = req.params;
+  const {
+    level,
+    institute_name,
+    start_year,
+    end_year,
+    score,
+    specialisation,
+    maximum_score,
+    scoring_type
+  } = req.body;
+  const { user } = req;
+
+  const education = await updateEducationDB({
+    level,
+    institute_name,
+    start_year,
+    end_year,
+    score,
+    specialisation,
+    maximum_score,
+    scoring_type,
+    education_id,
+    user_id: user.id
+  });
 
   res.status(200).send({
     success: true,

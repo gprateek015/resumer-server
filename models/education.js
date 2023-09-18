@@ -62,11 +62,13 @@ const educationSchema = new Schema(
 );
 
 educationSchema.post('findOneAndDelete', async function (education, next) {
-  const user = await User.findById(education.user_id);
-  user.educations = user.educations.filter(exp => {
-    return exp.toString() !== education.id.toString();
-  });
-  await user.save();
+  if (education) {
+    const user = await User.findById(education.user_id);
+    user.educations = user.educations.filter(exp => {
+      return exp.toString() !== education.id.toString();
+    });
+    await user.save();
+  }
   next();
 });
 

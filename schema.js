@@ -110,7 +110,6 @@ export const educationSchema = Joi.object({
   scoring_type: Joi.string().required()
 });
 export const educationUpdateSchema = Joi.object({
-  id: Joi.string().required(),
   level: Joi.string().valid(
     'lower_secondary',
     'senior_secondary',
@@ -127,9 +126,7 @@ export const educationUpdateSchema = Joi.object({
   score: Joi.number().min(0).max(100),
   specialisation: Joi.string()
 });
-export const educationDeleteSchema = Joi.object({
-  education_id: Joi.string().required()
-});
+export const educationDeleteSchema = Joi.object({});
 
 // ------------ Experience Schemas ------------
 export const experienceSchema = Joi.object({
@@ -142,7 +139,6 @@ export const experienceSchema = Joi.object({
   location: Joi.string()
 });
 export const experienceUpdateSchema = Joi.object({
-  id: Joi.string().required(),
   company_name: Joi.string(),
   position: Joi.string(),
   start_date: Joi.date().min('1-1-1900').max(new Date()).iso(),
@@ -151,9 +147,7 @@ export const experienceUpdateSchema = Joi.object({
   mode: Joi.string().valid('onsite', 'remote'),
   location: Joi.string()
 });
-export const experienceDeleteSchema = Joi.object({
-  experience_id: Joi.string().required()
-});
+export const experienceDeleteSchema = Joi.object({});
 
 // ------------ Project Schemas ------------
 export const projectSchema = Joi.object({

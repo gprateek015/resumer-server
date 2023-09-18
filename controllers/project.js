@@ -1,14 +1,24 @@
+import {
+  addNewProjectDB,
+  deleteProjectDB,
+  updateProjectDB
+} from '../db/project.js';
 import Project from '../models/project.js';
 
 export const addNewProject = async (req, res) => {
-  const user_id = req.user.id;
   const user = req.user;
+  const { name, skills_required, description, live_url, video_url, code_url } =
+    req.body;
 
-  const newProject = new Project({ ...req.body, user_id });
-  user.projects.push(newProject);
-
-  await newProject.save();
-  await user.save();
+  const newProject = await addNewProjectDB({
+    name,
+    skills_required,
+    description,
+    live_url,
+    video_url,
+    code_url,
+    user
+  });
 
   res.status(200).send({
     success: true,
@@ -17,8 +27,10 @@ export const addNewProject = async (req, res) => {
 };
 
 export const deleteProject = async (req, res) => {
-  const project_id = req.body.project_id;
-  await Project.findOneAndDelete({ _id: project_id });
+  const { project_id } = req.params;
+  const { user } = req;
+
+  await deleteProjectDB({ project_id, user_id: user.id });
 
   res.status(200).send({
     success: true
@@ -26,11 +38,21 @@ export const deleteProject = async (req, res) => {
 };
 
 export const updateProject = async (req, res) => {
-  const project = await Project.findOneAndUpdate(
-    { _id: req.body.id },
-    { ...req.body },
-    { new: true, runValidators: true }
-  );
+  const { name, skills_required, description, live_url, video_url, code_url } =
+    req.body;
+  const { project_id } = req.params;
+  const { user } = req;
+
+  const project = updateProjectDB({
+    name,
+    skills_required,
+    description,
+    live_url,
+    video_url,
+    code_url,
+    project_id,
+    user_id: user.id
+  });
 
   res.status(200).send({
     success: true,

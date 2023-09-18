@@ -21,7 +21,10 @@ router
     authenticateUser,
     catchValidationAsync(validateEducation),
     catchAsync(addNewEducation)
-  )
+  );
+
+router
+  .route('/:education_id')
   .delete(
     authenticateUser,
     catchValidationAsync(validateEducationDelete),

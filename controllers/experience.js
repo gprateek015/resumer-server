@@ -1,14 +1,23 @@
-import Experience from '../models/experience.js';
+import {
+  addNewExperienceDB,
+  deleteExperienceDB,
+  updateExperienceDB
+} from '../db/experience.js';
 
 export const addNewExperience = async (req, res) => {
-  const user_id = req.user.id;
   const user = req.user;
+  const { company_name, position, start_date, end_date, description, mode } =
+    req.body;
 
-  const newExperience = new Experience({ ...req.body, user_id });
-  user.experiences.push(newExperience);
-
-  await newExperience.save();
-  await user.save();
+  const newExperience = await addNewExperienceDB({
+    company_name,
+    position,
+    start_date,
+    end_date,
+    description,
+    mode,
+    user
+  });
 
   res.status(200).send({
     success: true,
@@ -17,8 +26,9 @@ export const addNewExperience = async (req, res) => {
 };
 
 export const deleteExperience = async (req, res) => {
-  const exp_id = req.body.experience_id;
-  await Experience.findOneAndDelete({ _id: exp_id });
+  const { experience_id } = req.params;
+  const { user } = req;
+  await deleteExperienceDB({ experience_id, user_id: user.id });
 
   res.status(200).send({
     success: true
@@ -26,11 +36,21 @@ export const deleteExperience = async (req, res) => {
 };
 
 export const updateExperience = async (req, res) => {
-  const experience = await Experience.findOneAndUpdate(
-    { _id: req.body.id },
-    { ...req.body },
-    { new: true, runValidators: true }
-  );
+  const { experience_id } = req.params;
+  const { company_name, position, start_date, end_date, description, mode } =
+    req.body;
+  const { user } = req;
+
+  const experience = await updateExperienceDB({
+    company_name,
+    position,
+    start_date,
+    end_date,
+    description,
+    mode,
+    experience_id,
+    user_id: user.id
+  });
 
   res.status(200).send({
     success: true,
