@@ -12,6 +12,7 @@ import {
   rewriteSentence
 } from '../utilities/text-davinci.js';
 import Resume from '../models/resume.js';
+import { v4 as uuidv4 } from 'uuid';
 
 import { s3_client } from '../index.js';
 import {
@@ -205,6 +206,37 @@ export const loadEngineeringResume = async (req, res) => {
 
   const resume = templates['engineeringTemplates'][template_id](req.body);
   const pdf = latex(resume);
+
+  // const id = uuidv4();
+  // pdf.pipe(
+  //   concat(async pdfData => {
+  //     const command = new PutObjectCommand({
+  //       Bucket: 'resumer-data-files',
+  //       Key: `resume/${id}.pdf`,
+  //       Body: pdfData
+  //       // ACL: 'public-read'
+  //     });
+
+  //     await s3_client.send(command);
+
+  //     const getSignedUrlParams = {
+  //       Bucket: 'resumer-data-files',
+  //       Key: `resume/${id}.pdf`
+  //     };
+
+  //     const signedUrlCommand = new GetObjectCommand(getSignedUrlParams);
+  //     const signedUrl = await getSignedUrl(s3_client, signedUrlCommand, {
+  //       expiresIn: 36000
+  //     });
+
+  //     res.status(200).send({
+  //       // url: `https://resumer-data-files.s3.ap-south-1.amazonaws.com/resume/${id}.pdf`
+  //       url: signedUrl
+  //     });
+  //     return;
+  //   })
+  // );
+
   pdf.pipe(res);
 };
 

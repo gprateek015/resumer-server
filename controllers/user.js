@@ -6,7 +6,7 @@ import { generateFromEmail, generateUsername } from 'unique-username-generator';
 import User from '../models/user.js';
 import ExpressError from '../utilities/express-error.js';
 import Skill from '../models/skill.js';
-import { fetchSelfDB, registerUserDB } from '../db/user.js';
+import { fetchSelfDB, registerUserDB, updateUserDB } from '../db/user.js';
 
 const findOrMakeSkills = (data = []) => {
   return Promise.all(
@@ -76,7 +76,7 @@ export const registerUser = async (req, res) => {
 
   const referral_code = referralCodeGenerator.alphaNumeric('lowercase', 4, 3);
 
-  const newUser = registerUserDB({
+  const newUser = await registerUserDB({
     name,
     email,
     password,
@@ -94,7 +94,7 @@ export const registerUser = async (req, res) => {
   });
 
   const json_secret_key = process.env.JWT_SECRET_KEY;
-  const token = jwt.sign(newUser.id.toString(), json_secret_key);
+  const token = jwt.sign(newUser.id, json_secret_key);
 
   await newUser.save();
 
@@ -133,12 +133,12 @@ export const fetchSelf = async (req, res) => {
 
 export const loginUser = async (req, res) => {
   const { email, password } = req.body;
-  const user = fetchSelfDB({ email });
+  const user = await fetchSelfDB({ email });
   if (user) {
     const match = await bcrypt.compare(password, user.hash_password);
     if (match) {
       const json_secret_key = process.env.JWT_SECRET_KEY;
-      const token = jwt.sign(user.id.toString(), json_secret_key);
+      const token = jwt.sign(user.id, json_secret_key);
 
       const skills = formatSkills(user.skills);
 
@@ -152,10 +152,10 @@ export const loginUser = async (req, res) => {
         },
         token
       });
+      return;
     }
-  } else {
-    throw new ExpressError("email and password doesn't match", 400);
   }
+  throw new ExpressError("email and password doesn't match", 400);
 };
 
 export const updateUser = async (req, res) => {

@@ -25,7 +25,8 @@
     "nodemon": "^2.0.22",
     "openai": "^3.2.1",
     "referral-code-generator": "^1.0.8",
-    "unique-username-generator": "^1.1.3"
+    "unique-username-generator": "^1.1.3",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",

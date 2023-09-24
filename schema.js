@@ -1,22 +1,23 @@
 import Joi from 'joi';
 import User from './models/user.js';
+import ExpressError from './utilities/express-error.js';
 
 const uniqueEmail = async email => {
   const user = await User.findOne({ email });
   if (user) {
-    const error = new Error('The email is already registered. Please Login!');
-    error.name = 'email';
-    throw error;
+    throw new ExpressError(
+      'The email is already registered. Please Login!',
+      401
+    );
   }
 };
 const uniqueUsername = async username => {
   const user = await User.findOne({ username });
   if (user) {
-    const error = new Error(
-      'The username is already registered. Please try with another username!'
+    throw new ExpressError(
+      'The username is already registered. Please try with another username!',
+      401
     );
-    error.name = 'username';
-    throw error;
   }
 };
 

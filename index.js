@@ -53,9 +53,10 @@ app.all('*', async (req, res) => {
 
 app.use((err, req, res, next) => {
   const { status_code = 500 } = err;
-  if (!err.error) err.error = 'internal_server_error';
+  if (!err.message) err.message = 'internal_server_error';
+
   res.status(status_code).send({
-    error: err.error
+    error: err.message
   });
 });
 
