@@ -19,6 +19,7 @@ const router = express.Router();
 
 router
   .route('/')
+  .get(authenticateUser, catchAsync(fetchSelf))
   .post(catchValidationAsync(validateUser), catchAsync(registerUser))
   .put(
     authenticateUser,
@@ -29,8 +30,6 @@ router
 router
   .route('/login')
   .post(catchValidationAsync(validateUserLogin), catchAsync(loginUser));
-
-router.route('/self').get(authenticateUser, catchAsync(fetchSelf));
 
 router.route('/:username').get(catchAsync(getPublicProfile));
 

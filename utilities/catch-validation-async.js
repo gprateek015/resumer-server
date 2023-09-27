@@ -6,10 +6,12 @@ const catchValidationAsync = fun => {
       await fun(req.body);
       next();
     } catch (error) {
-      const errors = {};
+      let errors = '';
       if (error.isJoi)
-        error.details.forEach(err => (errors[err.context.label] = err.message));
-      else errors[error.name] = error.message;
+        error.details.forEach(err => (errors += `${err.message}\n`));
+      else errors = error.message;
+
+      console.log(errors);
 
       next(new ExpressError(errors, 400));
     }
