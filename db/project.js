@@ -1,4 +1,10 @@
 import Project from '../models/project.js';
+import User from '../models/user.js';
+
+export const fetchProjectsFromDB = async user => {
+  const { projects } = await User.findById(user.id).populate('projects');
+  return projects;
+};
 
 export const addNewProjectDB = async ({
   name,

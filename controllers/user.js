@@ -53,7 +53,11 @@ export const registerUser = async (req, res) => {
     phone,
     gender,
     achievements,
-    profile_links
+    profile_links,
+    linkedin,
+    github,
+    twitter,
+    portfolio
   } = req.body;
   const saltRounds = 10;
   const hash_password = await bcrypt.hash(password, saltRounds);
@@ -90,7 +94,11 @@ export const registerUser = async (req, res) => {
     skills,
     referral_code,
     referred_by,
-    profile_links
+    profile_links,
+    linkedin,
+    github,
+    twitter,
+    portfolio
   });
 
   const json_secret_key = process.env.JWT_SECRET_KEY;
@@ -119,7 +127,7 @@ export const registerUser = async (req, res) => {
 export const fetchSelf = async (req, res) => {
   const { user } = req;
   const userData = await fetchSelfDB({ user_id: user.id });
-
+  console.log(user);
   if (!userData) {
     throw new ExpressError('User not found', 401);
   }
@@ -160,7 +168,19 @@ export const loginUser = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   const user_id = req.user.id;
-  const { city, state, phone, gender, achievements, profile_links } = req.body;
+  const {
+    city,
+    state,
+    phone,
+    gender,
+    achievements,
+    profile_links,
+    linkedin,
+    github,
+    twitter,
+    portfolio,
+    onboarding_completed
+  } = req.body;
 
   const skills = await findOrMakeSkills(req.body.skills);
 
@@ -172,7 +192,12 @@ export const updateUser = async (req, res) => {
     gender,
     achievements,
     profile_links,
-    skills
+    skills,
+    linkedin,
+    github,
+    twitter,
+    portfolio,
+    onboarding_completed
   });
 
   if (!user) {

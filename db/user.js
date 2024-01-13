@@ -14,7 +14,11 @@ export const registerUserDB = async ({
   skills,
   referral_code,
   referred_by,
-  profile_links
+  profile_links,
+  linkedin,
+  github,
+  twitter,
+  portfolio
 }) => {
   const newUser = new User({
     name,
@@ -30,7 +34,11 @@ export const registerUserDB = async ({
     skills,
     referral_code,
     referred_by,
-    profile_links
+    profile_links,
+    linkedin,
+    github,
+    twitter,
+    portfolio
   });
 
   return newUser;
@@ -52,11 +60,29 @@ export const updateUserDB = async ({
   gender,
   achievements,
   profile_links,
-  skills
+  skills,
+  linkedin,
+  github,
+  twitter,
+  portfolio,
+  onboarding_completed
 }) => {
   const user = await User.findOneAndUpdate(
     { _id: user_id },
-    { city, state, phone, gender, achievements, profile_links, skills },
+    {
+      city,
+      state,
+      phone,
+      gender,
+      achievements,
+      profile_links,
+      skills,
+      linkedin,
+      github,
+      twitter,
+      portfolio,
+      onboarding_completed
+    },
     { new: true, runValidators: true }
   ).populate(['experiences', 'educations', 'skills.skill', 'projects']);
 

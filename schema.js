@@ -50,7 +50,11 @@ export const userSchema = Joi.object({
         .required()
     })
   ),
-  invite_code: Joi.string()
+  invite_code: Joi.string(),
+  linkedin: Joi.string().allow('').optional(),
+  github: Joi.string().allow('').optional(),
+  twitter: Joi.string().allow('').optional(),
+  portfolio: Joi.string().allow('').optional()
 });
 
 export const userUpdateSchema = Joi.object({
@@ -79,7 +83,12 @@ export const userUpdateSchema = Joi.object({
         .valid('technical_skills', 'dev_tools', 'core_subjects', 'languages')
         .required()
     })
-  )
+  ),
+  linkedin: Joi.string().allow('').optional(),
+  github: Joi.string().allow('').optional(),
+  twitter: Joi.string().allow('').optional(),
+  portfolio: Joi.string().allow('').optional(),
+  onboarding_completed: Joi.bool().optional()
 });
 
 export const userLoginSchema = Joi.object({
@@ -108,7 +117,8 @@ export const educationSchema = Joi.object({
   score: Joi.number().min(0).max(100).required(),
   specialisation: Joi.string(),
   maximum_score: Joi.number().required(),
-  scoring_type: Joi.string().required()
+  scoring_type: Joi.string().required(),
+  degree: Joi.string().required()
 });
 export const educationUpdateSchema = Joi.object({
   level: Joi.string().valid(
@@ -125,7 +135,10 @@ export const educationUpdateSchema = Joi.object({
     .max(new Date().getFullYear() + 10)
     .greater(Joi.ref('start_year')),
   score: Joi.number().min(0).max(100),
-  specialisation: Joi.string()
+  specialisation: Joi.string(),
+  maximum_score: Joi.number().required(),
+  scoring_type: Joi.string().required(),
+  degree: Joi.string().required()
 });
 export const educationDeleteSchema = Joi.object({});
 
@@ -160,7 +173,6 @@ export const projectSchema = Joi.object({
   video_url: Joi.string()
 });
 export const projectUpdateSchema = Joi.object({
-  id: Joi.string().required(),
   name: Joi.string(),
   skills_required: Joi.array().items(Joi.string()),
   description: Joi.array().items(Joi.string()),

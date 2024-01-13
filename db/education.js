@@ -1,4 +1,10 @@
 import Education from '../models/education.js';
+import User from '../models/user.js';
+
+export const fetchEducationsFromDB = async user => {
+  const { educations } = await User.findById(user.id).populate('educations');
+  return educations;
+};
 
 export const addNewEducationDB = async ({
   user,
@@ -9,7 +15,8 @@ export const addNewEducationDB = async ({
   score,
   specialisation,
   maximum_score,
-  scoring_type
+  scoring_type,
+  degree
 }) => {
   const newEducation = new Education({
     user_id: user.id,
@@ -20,7 +27,8 @@ export const addNewEducationDB = async ({
     score,
     specialisation,
     maximum_score,
-    scoring_type
+    scoring_type,
+    degree
   });
 
   await newEducation.save();
@@ -46,7 +54,8 @@ export const updateEducationDB = async ({
   maximum_score,
   scoring_type,
   education_id,
-  user_id
+  user_id,
+  degree
 }) => {
   const education = await Education.findOneAndUpdate(
     { $and: [{ _id: education_id }, { user_id }] },
@@ -58,7 +67,8 @@ export const updateEducationDB = async ({
       score,
       specialisation,
       maximum_score,
-      scoring_type
+      scoring_type,
+      degree
     },
     { new: true, runValidators: true }
   );

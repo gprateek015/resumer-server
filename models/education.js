@@ -31,15 +31,21 @@ const educationSchema = new Schema(
       required: true
     },
     scoring_type: {
-      type: String, // cgpa | percentage
-      required: true
+      type: String,
+      required: true,
+      enum: ['cgpa', 'percentage']
     },
     maximum_score: {
       type: Number,
       required: true
     },
     specialisation: {
-      // required for levels senior_secondary | diploma | graduation |post_graduation
+      // required for levels senior_secondary | diploma | graduation | post_graduation
+      type: String,
+      required: false
+    },
+    degree: {
+      // required for levels graduation | post_graduation
       type: String,
       required: false
     },

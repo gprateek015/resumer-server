@@ -7,7 +7,7 @@ import User from '../models/user.js';
 import templates from '../resume/index.js';
 import ExpressError from '../utilities/express-error.js';
 import {
-  rewriteAchievements,
+  // rewriteAchievements,
   rewriteDescriptions,
   rewriteSentence
 } from '../utilities/text-davinci.js';
@@ -21,6 +21,11 @@ import {
   saveResumeDB,
   updateResumeDetailsDB
 } from '../db/resume.js';
+import {
+  rewriteAchievements,
+  rewriteExperiences,
+  rewriteProjects
+} from '../utilities/rewrite-funcitons.js';
 
 const months = [
   'January',
@@ -57,7 +62,18 @@ const getUserData = async user_id => {
     'projects'
   ]);
 
-  const { name, city, state, phone, gender, email, achievements } = user;
+  const {
+    name,
+    city,
+    state,
+    phone,
+    gender,
+    email,
+    achievements,
+    linkedin,
+    github,
+    twitter
+  } = user;
 
   const educations = user.educations.map(education => {
     const new_edu = education.toJSON();
@@ -105,19 +121,6 @@ const getUserData = async user_id => {
     return new_exp;
   });
 
-  const linkedin = user.profile_links.find(
-    profile => profile.name.toLowerCase() === 'linkedin'
-  )?.link;
-  const github = user.profile_links.find(
-    profile => profile.name.toLowerCase() === 'github'
-  )?.link;
-
-  const profile_links = user.profile_links.filter(
-    profile =>
-      profile.name.toLowerCase() !== 'linkedin' ||
-      profile.name.toLowerCase() !== 'github'
-  );
-
   const technical_skills = user.skills
     .filter(skill => skill.skill.type === 'technical_skills')
     .sort(skillCompareFunction)
@@ -148,7 +151,7 @@ const getUserData = async user_id => {
     educations,
     linkedin,
     github,
-    profile_links,
+    profile_links: user.profile_links,
     technical_skills,
     dev_tools,
     core_subjects,
@@ -163,29 +166,19 @@ export const getNewResumeData = async (req, res) => {
   const userData = await getUserData(user_id);
 
   if (rewrite === 'true') {
-    userData.experiences = await Promise.all(
-      userData.experiences.map(async experience => {
-        experience.description = await rewriteDescriptions(
-          experience.description,
-          job_description
-        );
-        return experience;
-      })
+    userData.experiences = await rewriteExperiences(
+      userData.experiences,
+      job_description
     );
-    userData.projects = await Promise.all(
-      userData.projects.map(async project => {
-        project.description = await rewriteDescriptions(
-          project.description,
-          job_description
-        );
-        return project;
-      })
+
+    userData.projects = await rewriteProjects(
+      userData.projects,
+      job_description
     );
-    // userData.achievements = await rewriteAchievements(userData.achievements);
-    userData.achievements = await Promise.all(
-      userData.achievements.map(
-        async achievement => await rewriteSentence(achievement, job_description)
-      )
+
+    userData.achievements = await rewriteAchievements(
+      userData.achievements,
+      job_description
     );
   }
 
