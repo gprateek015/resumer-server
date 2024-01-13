@@ -1,6 +1,6 @@
 import { Schema, model } from 'mongoose';
 
-const profileLiskSchema = new Schema(
+const profileLinkSchema = new Schema(
   {
     name: {
       type: String,
@@ -49,6 +49,10 @@ const userSchema = new Schema(
       type: String,
       required: false
     },
+    country: {
+      type: String,
+      required: false
+    },
     phone: {
       type: String,
       required: false
@@ -68,7 +72,11 @@ const userSchema = new Schema(
       type: String,
       required: true
     },
-    profile_links: [profileLiskSchema],
+    profile_links: [profileLinkSchema], // Coding profiles
+    linkedin: String,
+    github: String,
+    twitter: String,
+    portfolio: String,
     achievements: [
       {
         type: String
@@ -116,6 +124,10 @@ const userSchema = new Schema(
     ],
     default_resume_id: {
       type: String
+    },
+    onboarding_completed: {
+      type: Boolean,
+      default: false
     }
   },
   {

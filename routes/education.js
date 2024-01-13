@@ -2,6 +2,7 @@ import express from 'express';
 import {
   addNewEducation,
   deleteEducation,
+  fetchEducations,
   updateEducation
 } from '../controllers/education.js';
 import {
@@ -17,6 +18,7 @@ const router = express.Router();
 
 router
   .route('/')
+  .get(authenticateUser, catchAsync(fetchEducations))
   .post(
     authenticateUser,
     catchValidationAsync(validateEducation),

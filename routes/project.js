@@ -2,6 +2,7 @@ import express from 'express';
 import {
   addNewProject,
   deleteProject,
+  fetchProjects,
   updateProject
 } from '../controllers/project.js';
 import {
@@ -17,6 +18,7 @@ const router = express.Router();
 
 router
   .route('/')
+  .get(authenticateUser, catchAsync(fetchProjects))
   .post(
     authenticateUser,
     catchValidationAsync(validateProject),

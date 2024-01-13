@@ -1,9 +1,17 @@
 import {
   addNewProjectDB,
   deleteProjectDB,
-  updateProjectDB
+  updateProjectDB,
+  fetchProjectsFromDB
 } from '../db/project.js';
-import Project from '../models/project.js';
+
+export const fetchProjects = async (req, res) => {
+  const projects = await fetchProjectsFromDB(req.user);
+  res.status(200).send({
+    success: true,
+    projects
+  });
+};
 
 export const addNewProject = async (req, res) => {
   const user = req.user;
@@ -21,8 +29,7 @@ export const addNewProject = async (req, res) => {
   });
 
   res.status(200).send({
-    success: true,
-    project: newProject
+    success: true
   });
 };
 
@@ -55,8 +62,7 @@ export const updateProject = async (req, res) => {
   });
 
   res.status(200).send({
-    success: true,
-    project: { ...project.toJSON() }
+    success: true
   });
 };
 

@@ -19,24 +19,24 @@ export const extractKeywords = async job_description => {
 };
 
 export const rewriteDescriptions = async (description, job_description) => {
-  if (description) return description;
+  return description;
   let new_description = description.join('. ');
 
   let prompt = '';
   if (job_description?.length) {
-    const keywords = await extractKeywords(job_description);
+    // const keywords = await extractKeywords(job_description);
 
-    // prompt = `You are a resume writing expert and your task is to generate exactly 3 resume points using the following description and the job description. You will get a plus point if you use metrices in the statement. Each statement should contain about 17 words. You can also add new statements if necessary maintaining the overall context and meaning. Use new line only for seperating sentences. Do not use full stop for seperating sentences. Please do not add any character before statements.
-    // Description: "${new_description}".
-    // Job description: ${job_description}`;
     prompt = `Please rewrite the following description and try to use the keywords that i have mentioned below. Generate three concise bullet points in about 15 to 20 words, separating each point with a new line. Write it in first person. Please only return the rewritten points:
+    Description: "${new_description}".
+    Job description: ${job_description}`;
+    // prompt = `Please rewrite the following description and try to use the keywords that i have mentioned below. Generate three concise bullet points in about 15 to 20 words, separating each point with a new line. Write it in first person. Please only return the rewritten points:
 
-    Description:
-    ${new_description}
-    
-    Keywords:
-    ${keywords}
-    `;
+    // Description:
+    // ${new_description}
+
+    // Keywords:
+    // ${keywords}
+    // `;
   } else {
     // prompt = `You are a resume writing expert and your task is to generate exactly 3 statements using the following description. You will get a plus point if you use metrices in the statement. Each statement should contain about 17 words. You can also add new statements if necessary maintaining the overall context and meaning. Use new line only for seperating sentences. Do not use full stop for seperating sentences. Please do not add any character before statements. Description: "${new_description}"`;
     prompt = `Please rewrite the following description for a professional resume. Write it in first person. Generate three concise bullet points in about 10 to 15 words, separating each point with a new line:
@@ -46,6 +46,7 @@ export const rewriteDescriptions = async (description, job_description) => {
   }
 
   try {
+    console.log('hey hey*********************');
     const response = await openai.createCompletion({
       model: 'text-davinci-003',
       prompt,
@@ -67,7 +68,7 @@ export const rewriteDescriptions = async (description, job_description) => {
 };
 
 export const rewriteSentence = async (sentence, job_description) => {
-  if (sentence) return sentence;
+  return sentence;
   let prompt = '';
   if (job_description?.length) {
     prompt = `You are expert at resume writing. Your task is to rewrite the sentence in about 10 to 15 words using the given job description. 

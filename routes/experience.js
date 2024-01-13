@@ -2,6 +2,7 @@ import express from 'express';
 import {
   addNewExperience,
   deleteExperience,
+  fetchExperiences,
   updateExperience
 } from '../controllers/experience.js';
 import {
@@ -17,6 +18,7 @@ const router = express.Router();
 
 router
   .route('/')
+  .get(authenticateUser, catchAsync(fetchExperiences))
   .post(
     authenticateUser,
     catchValidationAsync(validateExperience),

@@ -1,8 +1,17 @@
 import {
   addNewEducationDB,
   deleteEducationDB,
+  fetchEducationsFromDB,
   updateEducationDB
 } from '../db/education.js';
+
+export const fetchEducations = async (req, res) => {
+  const educations = await fetchEducationsFromDB(req.user);
+  res.status(200).send({
+    success: true,
+    educations
+  });
+};
 
 export const addNewEducation = async (req, res) => {
   const { user } = req;
@@ -14,7 +23,8 @@ export const addNewEducation = async (req, res) => {
     score,
     specialisation,
     maximum_score,
-    scoring_type
+    scoring_type,
+    degree
   } = req.body;
 
   const newEducation = await addNewEducationDB({
@@ -26,12 +36,12 @@ export const addNewEducation = async (req, res) => {
     score,
     specialisation,
     maximum_score,
-    scoring_type
+    scoring_type,
+    degree
   });
 
   res.status(200).send({
-    success: true,
-    experience: newEducation
+    success: true
   });
 };
 
@@ -56,7 +66,8 @@ export const updateEducation = async (req, res) => {
     score,
     specialisation,
     maximum_score,
-    scoring_type
+    scoring_type,
+    degree
   } = req.body;
   const { user } = req;
 
@@ -70,12 +81,12 @@ export const updateEducation = async (req, res) => {
     maximum_score,
     scoring_type,
     education_id,
-    user_id: user.id
+    user_id: user.id,
+    degree
   });
 
   res.status(200).send({
-    success: true,
-    education: { ...education.toJSON() }
+    success: true
   });
 };
 
