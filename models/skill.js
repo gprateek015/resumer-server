@@ -16,12 +16,7 @@ const skillSchema = new Schema(
   {
     versionKey: 0,
     toJSON: {
-      virtuals: true,
-      transform: (doc, ret) => {
-        ret.id = ret._id;
-        delete ret._id;
-        return ret;
-      }
+      virtuals: true
     }
   }
 );

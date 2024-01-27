@@ -26,41 +26,16 @@ import {
   rewriteExperiences,
   rewriteProjects
 } from '../utilities/rewrite-funcitons.js';
-
-const months = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December'
-];
-
-const skillCompareFunction = (a, b) => {
-  if (a.proficiency === b.proficiency) return 0;
-  if (
-    (a.proficiency === 'beginner' &&
-      (b.proficiency === 'moderate' || b.proficiency === 'expert')) ||
-    (a.proficiency === 'moderate' && b.proficiency === 'expert')
-  ) {
-    return 1;
-  }
-  return -1;
-};
+import {
+  skillCompareFunction,
+  updateEducationsForResume,
+  updateExperiencesForResume
+} from '../utilities/index.js';
 
 const getUserData = async user_id => {
-  const user = await User.findById(user_id).populate([
-    'experiences',
-    'educations',
-    'skills.skill',
-    'projects'
-  ]);
+  const user = await User.findById(user_id)
+    .populate(['experiences', 'educations', 'skills.skill', 'projects'])
+    .lean();
 
   const {
     name,
@@ -72,54 +47,9 @@ const getUserData = async user_id => {
     achievements,
     linkedin,
     github,
-    twitter
+    twitter,
+    portfolio
   } = user;
-
-  const educations = user.educations.map(education => {
-    const new_edu = education.toJSON();
-    switch (new_edu.level) {
-      case 'lower_secondary': {
-        new_edu.education_type = 'Lower Secondary';
-        break;
-      }
-      case 'senior_secondary': {
-        new_edu.education_type = `Senior Secondary in ${new_edu.specialisation}`;
-        break;
-      }
-      case 'diploma': {
-        new_edu.education_type = `Diploma in ${new_edu.specialisation}`;
-        break;
-      }
-      case 'graduation': {
-        new_edu.education_type = `Bachelors in ${new_edu.specialisation}`;
-        break;
-      }
-      case 'post_graduation': {
-        new_edu.education_type = `Post Graduation in ${new_edu.specialisation}`;
-        break;
-      }
-      default:
-        new_edu.education_type = 'Education level missing';
-    }
-    return new_edu;
-  });
-
-  const projects = user.projects.map(project => project.toJSON());
-
-  const experiences = user.experiences.map(experience => {
-    const start_date = new Date(experience.start_date);
-    const end_date = experience.end_date && new Date(experience.end_date);
-    const new_exp = {
-      ...experience.toJSON(),
-      start_date: `${months[start_date.getMonth()]} ${start_date.getFullYear()}`
-    };
-    if (end_date) {
-      new_exp.end_date = `${
-        months[end_date.getMonth()]
-      } ${end_date.getFullYear()}`;
-    }
-    return new_exp;
-  });
 
   const technical_skills = user.skills
     .filter(skill => skill.skill.type === 'technical_skills')
@@ -146,21 +76,23 @@ const getUserData = async user_id => {
     gender,
     email,
     achievements,
-    projects,
-    experiences,
-    educations,
+    projects: user.projects,
+    experiences: user.experiences,
+    educations: user.educations,
     linkedin,
     github,
     profile_links: user.profile_links,
     technical_skills,
     dev_tools,
     core_subjects,
-    languages
+    languages,
+    twitter,
+    portfolio
   };
 };
 
 export const getNewResumeData = async (req, res) => {
-  const user_id = req.user.id;
+  const user_id = req.user._id;
   const { rewrite = false } = req.query;
   const { job_description } = req.body;
   const userData = await getUserData(user_id);
@@ -197,7 +129,13 @@ export const loadEngineeringResume = async (req, res) => {
       404
     );
 
-  const resume = templates['engineeringTemplates'][template_id](req.body);
+  const resumeData = {
+    ...req.body,
+    experiences: updateExperiencesForResume(req.body.experiences),
+    educations: updateEducationsForResume(req.body.educations)
+  };
+
+  const resume = templates['engineeringTemplates'][template_id](resumeData);
   const pdf = latex(resume);
 
   // const id = uuidv4();
@@ -263,7 +201,7 @@ export const updateResume = async (req, res) => {
   const { user } = req;
   await updateResumeDetailsDB({
     resume_id,
-    user_id: user.id,
+    user_id: user._id,
     data: JSON.stringify(req.body)
   });
   res.status(200).send({
@@ -275,7 +213,7 @@ export const getResumeDetails = async (req, res) => {
   const { resume_id } = req.params;
   const resume = await getResumeDetailsDB({ resume_id });
 
-  if (resume && resume.user.toString() === req.user.id.toString()) {
+  if (resume && resume.user.toString() === req.user._id.toString()) {
     res.status(200).send({
       success: true,
       resume: {
@@ -292,7 +230,7 @@ export const getResumeDetails = async (req, res) => {
 export const deleteResume = async (req, res) => {
   const { resume_id } = req.params;
   const is_authorsed = req.user.resumes.find(
-    resume => resume.id.toString() === resume_id
+    resume => resume._id.toString() === resume_id
   );
 
   if (!is_authorsed) {

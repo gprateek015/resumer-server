@@ -104,7 +104,9 @@ const addHeadingSection = ({
   phone,
   email,
   linkedin,
-  github
+  github,
+  portfolio,
+  twitter
 }) => {
   const heading = `\\begin{document}
   \\begin{center}
@@ -113,12 +115,22 @@ const addHeadingSection = ({
     \\small \\raisebox{-0.1\\height}\\faPhone\\ ${phone} ~ \\href{mailto:${email}}{\\raisebox{-0.2\\height}\\faEnvelope\\ {${email}}} ~
     ${
       linkedin
-        ? `\\href{${linkedin}}{\\raisebox{-0.2\\height}\\faLinkedin\\ {linkedin}} ~`
+        ? `\\href{${linkedin}}{\\raisebox{-0.2\\height}\\faLinkedin\\ {Linkedin}} ~`
         : ''
     }
     ${
       github
-        ? `\\href{${github}}{\\raisebox{-0.2\\height}\\faGithub\\ {github}}`
+        ? `\\href{${github}}{\\raisebox{-0.2\\height}\\faGithub\\ {Github}} ~`
+        : ''
+    }
+    ${
+      twitter
+        ? `\\href{${twitter}}{\\raisebox{-0.2\\height}\\faTwitter\\ {Twitter}} ~`
+        : ''
+    }
+    ${
+      portfolio
+        ? `\\href{${portfolio}}{\\raisebox{-0.2\\height}\\faGlobe\\ {Portfolio}} ~`
         : ''
     }
   \\end{center}
@@ -326,6 +338,8 @@ const template1 = ({
   email,
   linkedin,
   github,
+  portfolio,
+  twitter,
   educations = [],
   experiences = [],
   projects = [],
@@ -345,7 +359,9 @@ const template1 = ({
       phone,
       email,
       linkedin,
-      github
+      github,
+      portfolio,
+      twitter
     }) +
     addEducationSection(educations) +
     addExperienceSection(experiences) +

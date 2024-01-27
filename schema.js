@@ -115,10 +115,10 @@ export const educationSchema = Joi.object({
     .greater(Joi.ref('start_year'))
     .required(),
   score: Joi.number().min(0).max(100).required(),
-  specialisation: Joi.string(),
+  specialisation: Joi.string().optional().allow(''),
   maximum_score: Joi.number().required(),
   scoring_type: Joi.string().required(),
-  degree: Joi.string().required()
+  degree: Joi.string().optional().allow('')
 });
 export const educationUpdateSchema = Joi.object({
   level: Joi.string().valid(
@@ -135,10 +135,10 @@ export const educationUpdateSchema = Joi.object({
     .max(new Date().getFullYear() + 10)
     .greater(Joi.ref('start_year')),
   score: Joi.number().min(0).max(100),
-  specialisation: Joi.string(),
+  specialisation: Joi.string().allow(''),
   maximum_score: Joi.number().required(),
   scoring_type: Joi.string().required(),
-  degree: Joi.string().required()
+  degree: Joi.string().required().allow('')
 });
 export const educationDeleteSchema = Joi.object({});
 

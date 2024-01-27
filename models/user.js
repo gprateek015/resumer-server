@@ -132,12 +132,7 @@ const userSchema = new Schema(
   },
   {
     toJSON: {
-      virtuals: true,
-      transform: (doc, ret) => {
-        ret.id = ret._id;
-        delete ret._id;
-        return ret;
-      }
+      virtuals: true
     },
     versionKey: false,
     toObject: { virtuals: true }

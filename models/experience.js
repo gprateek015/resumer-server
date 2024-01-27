@@ -41,12 +41,7 @@ const experienceSchema = new Schema(
   {
     versionKey: false,
     toJSON: {
-      virtuals: true,
-      transform: (doc, ret) => {
-        ret.id = ret._id;
-        delete ret._id;
-        return ret;
-      }
+      virtuals: true
     }
   }
 );
@@ -54,7 +49,7 @@ const experienceSchema = new Schema(
 experienceSchema.post('findOneAndDelete', async function (experience, next) {
   const user = await User.findById(experience.user_id);
   user.experiences = user.experiences.filter(exp => {
-    return exp.toString() !== experience.id.toString();
+    return exp.toString() !== experience._id.toString();
   });
   await user.save();
   next();

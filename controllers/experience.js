@@ -36,7 +36,7 @@ export const addNewExperience = async (req, res) => {
 export const deleteExperience = async (req, res) => {
   const { experience_id } = req.params;
   const { user } = req;
-  await deleteExperienceDB({ experience_id, user_id: user.id });
+  await deleteExperienceDB({ experience_id, user_id: user._id });
 
   res.status(200).send({
     success: true
@@ -65,7 +65,7 @@ export const updateExperience = async (req, res) => {
     mode,
     location,
     experience_id,
-    user_id: user.id
+    user_id: user._id
   });
 
   res.status(200).send({

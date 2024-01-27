@@ -37,7 +37,7 @@ export const deleteProject = async (req, res) => {
   const { project_id } = req.params;
   const { user } = req;
 
-  await deleteProjectDB({ project_id, user_id: user.id });
+  await deleteProjectDB({ project_id, user_id: user._id });
 
   res.status(200).send({
     success: true
@@ -58,7 +58,7 @@ export const updateProject = async (req, res) => {
     video_url,
     code_url,
     project_id,
-    user_id: user.id
+    user_id: user._id
   });
 
   res.status(200).send({

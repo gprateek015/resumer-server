@@ -2,7 +2,7 @@ import Project from '../models/project.js';
 import User from '../models/user.js';
 
 export const fetchProjectsFromDB = async user => {
-  const { projects } = await User.findById(user.id).populate('projects');
+  const { projects } = await User.findById(user._id).populate('projects');
   return projects;
 };
 
@@ -22,7 +22,7 @@ export const addNewProjectDB = async ({
     live_url,
     video_url,
     code_url,
-    user_id: user.id
+    user_id: user._id
   });
   user.projects.push(newProject);
 
