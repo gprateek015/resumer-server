@@ -7,40 +7,13 @@ import User from '../models/user.js';
 import ExpressError from '../utilities/express-error.js';
 import Skill from '../models/skill.js';
 import { fetchSelfDB, registerUserDB, updateUserDB } from '../db/user.js';
-
-const findOrMakeSkills = (data = []) => {
-  return Promise.all(
-    data.map(async skill => {
-      let sk = null;
-      if (skill?.id) {
-        sk = await Skill.findById(skill.id);
-        if (!sk) {
-          throw new ExpressError(
-            'Skill Id is invalid. Please add a new skill!'
-          );
-        }
-      } else {
-        try {
-          sk = new Skill({ name: skill.name, type: skill.type });
-          await sk.save();
-        } catch (err) {
-          // Skill with same name already exists
-          sk = await Skill.findOne({ name: skill.name });
-        }
-      }
-      return {
-        skill: sk,
-        proficiency: skill.proficiency
-      };
-    })
-  );
-};
+import { findOrMakeSkills } from '../utilities/index.js';
 
 const formatSkills = (skills = []) =>
   skills.map(skill => ({
     proficiency: skill.proficiency,
     name: skill.skill.name,
-    id: skill.skill.id
+    id: skill.skill._id
   }));
 
 export const registerUser = async (req, res) => {
@@ -102,7 +75,7 @@ export const registerUser = async (req, res) => {
   });
 
   const json_secret_key = process.env.JWT_SECRET_KEY;
-  const token = jwt.sign(newUser.id, json_secret_key);
+  const token = jwt.sign(newUser._id, json_secret_key);
 
   await newUser.save();
 
@@ -126,8 +99,7 @@ export const registerUser = async (req, res) => {
 
 export const fetchSelf = async (req, res) => {
   const { user } = req;
-  const userData = await fetchSelfDB({ user_id: user.id });
-  console.log(user);
+  const userData = await fetchSelfDB({ user_id: user._id });
   if (!userData) {
     throw new ExpressError('User not found', 401);
   }
@@ -146,7 +118,7 @@ export const loginUser = async (req, res) => {
     const match = await bcrypt.compare(password, user.hash_password);
     if (match) {
       const json_secret_key = process.env.JWT_SECRET_KEY;
-      const token = jwt.sign(user.id, json_secret_key);
+      const token = jwt.sign(user._id, json_secret_key);
 
       const skills = formatSkills(user.skills);
 
@@ -167,7 +139,7 @@ export const loginUser = async (req, res) => {
 };
 
 export const updateUser = async (req, res) => {
-  const user_id = req.user.id;
+  const user_id = req.user._id;
   const {
     city,
     state,

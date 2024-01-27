@@ -7,16 +7,9 @@ export const getSkills = async (req, res) => {
   if (page_no <= 0) {
     throw new ExpressError('Page number should be greater than 0', 400);
   }
-  const skills = await getSkillsDB({ query });
+  const skills = await getSkillsDB({ query, page_no });
 
-  const skillToSend = skills
-    .slice((parseInt(page_no) - 1) * 10, parseInt(page_no) * 10)
-    .map(skill => {
-      const s = skill.toJSON();
-      delete s.id;
-      return s;
-    });
-  res.status(200).send(skillToSend);
+  res.status(200).send(skills);
 };
 
 export default {

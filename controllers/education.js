@@ -49,7 +49,7 @@ export const deleteEducation = async (req, res) => {
   const { education_id } = req.params;
   const { user } = req;
 
-  await deleteEducationDB({ education_id, user_id: user.id });
+  await deleteEducationDB({ education_id, user_id: user._id });
 
   res.status(200).send({
     success: true
@@ -81,7 +81,7 @@ export const updateEducation = async (req, res) => {
     maximum_score,
     scoring_type,
     education_id,
-    user_id: user.id,
+    user_id: user._id,
     degree
   });
 

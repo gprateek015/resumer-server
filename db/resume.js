@@ -13,7 +13,7 @@ export const saveResumeDB = async ({
     user
   });
 
-  resume.filename = `${user.name}-${resume.id.substr(0, 2)}`;
+  resume.filename = `${user.name}-${resume._id.substr(0, 2)}`;
   await resume.save();
 
   user.resumes = [...(user.resumes || []), resume];

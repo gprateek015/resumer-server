@@ -2,7 +2,7 @@ import Education from '../models/education.js';
 import User from '../models/user.js';
 
 export const fetchEducationsFromDB = async user => {
-  const { educations } = await User.findById(user.id).populate('educations');
+  const { educations } = await User.findById(user._id).populate('educations');
   return educations;
 };
 
@@ -19,7 +19,7 @@ export const addNewEducationDB = async ({
   degree
 }) => {
   const newEducation = new Education({
-    user_id: user.id,
+    user_id: user._id,
     level,
     institute_name,
     start_year,

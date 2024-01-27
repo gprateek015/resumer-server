@@ -2,7 +2,7 @@ import Experience from '../models/experience.js';
 import User from '../models/user.js';
 
 export const fetchExperiencesFromDB = async user => {
-  const { experiences } = await User.findById(user.id).populate('experiences');
+  const { experiences } = await User.findById(user._id).populate('experiences');
   return experiences;
 };
 
@@ -22,7 +22,7 @@ export const addNewExperienceDB = async ({
     end_date,
     description,
     mode,
-    user_id: user.id
+    user_id: user._id
   });
   user.experiences.push(newExperience);
 

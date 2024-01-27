@@ -57,12 +57,7 @@ const educationSchema = new Schema(
   {
     versionKey: 0,
     toJSON: {
-      virtuals: true,
-      transform: (doc, ret) => {
-        ret.id = ret._id;
-        delete ret._id;
-        return ret;
-      }
+      virtuals: true
     }
   }
 );
@@ -71,7 +66,7 @@ educationSchema.post('findOneAndDelete', async function (education, next) {
   if (education) {
     const user = await User.findById(education.user_id);
     user.educations = user.educations.filter(exp => {
-      return exp.toString() !== education.id.toString();
+      return exp.toString() !== education._id.toString();
     });
     await user.save();
   }

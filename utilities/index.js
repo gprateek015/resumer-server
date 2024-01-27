@@ -1,0 +1,102 @@
+import Skill from '../models/skill.js';
+
+export const skillCompareFunction = (a, b) => {
+  if (a.proficiency === b.proficiency) return 0;
+  if (
+    (a.proficiency === 'beginner' &&
+      (b.proficiency === 'moderate' || b.proficiency === 'expert')) ||
+    (a.proficiency === 'moderate' && b.proficiency === 'expert')
+  ) {
+    return 1;
+  }
+  return -1;
+};
+
+export const findOrMakeSkills = (data = []) => {
+  return Promise.all(
+    data.map(async skill => {
+      let sk = null;
+      if (skill?._id) {
+        sk = await Skill.findById(skill._id);
+        if (!sk) {
+          throw new ExpressError(
+            'Skill Id is invalid. Please add a new skill!'
+          );
+        }
+      } else {
+        try {
+          sk = new Skill({ name: skill.name, type: skill.type });
+          await sk.save();
+        } catch (err) {
+          // Skill with same name already exists
+          sk = await Skill.findOne({ name: skill.name });
+        }
+      }
+      return {
+        skill: sk,
+        proficiency: skill.proficiency
+      };
+    })
+  );
+};
+
+export const updateEducationsForResume = (educations = []) =>
+  educations.map(education => {
+    const new_edu = education;
+    switch (new_edu.level) {
+      case 'lower_secondary': {
+        new_edu.education_type = 'Lower Secondary';
+        break;
+      }
+      case 'senior_secondary': {
+        new_edu.education_type = `Senior Secondary in ${new_edu.specialisation}`;
+        break;
+      }
+      case 'diploma': {
+        new_edu.education_type = `Diploma in ${new_edu.specialisation}`;
+        break;
+      }
+      case 'graduation': {
+        new_edu.education_type = `Bachelors in ${new_edu.specialisation}`;
+        break;
+      }
+      case 'post_graduation': {
+        new_edu.education_type = `Post Graduation in ${new_edu.specialisation}`;
+        break;
+      }
+      default:
+        new_edu.education_type = 'Education level missing';
+    }
+    return new_edu;
+  });
+
+const months = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December'
+];
+
+export const updateExperiencesForResume = (experiences = []) =>
+  experiences.map(experience => {
+    const start_date = new Date(experience.start_date);
+    const end_date = experience.end_date && new Date(experience.end_date);
+    const new_exp = {
+      ...experience,
+      start_date: `${months[start_date.getMonth()]} ${start_date.getFullYear()}`
+    };
+    if (end_date) {
+      new_exp.end_date = `${
+        months[end_date.getMonth()]
+      } ${end_date.getFullYear()}`;
+    }
+    return new_exp;
+  });
