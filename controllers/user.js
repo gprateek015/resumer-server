@@ -118,7 +118,7 @@ export const loginUser = async (req, res) => {
     const match = await bcrypt.compare(password, user.hash_password);
     if (match) {
       const json_secret_key = process.env.JWT_SECRET_KEY;
-      const token = jwt.sign(user._id, json_secret_key);
+      const token = jwt.sign(user._id.toString(), json_secret_key);
 
       const skills = formatSkills(user.skills);
 
