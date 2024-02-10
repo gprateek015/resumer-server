@@ -5,7 +5,7 @@ const educationSchema = new Schema(
   {
     level: {
       type: String,
-      required: true,
+      required: false, // Should be true
       enum: [
         'lower_secondary',
         'senior_secondary',

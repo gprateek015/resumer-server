@@ -2,11 +2,14 @@ import latex from 'node-latex';
 import { PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import concat from 'concat-stream';
+import fs from 'fs';
+import { formatSkills, parsePDF } from '../utilities/index.js';
 
 import User from '../models/user.js';
 import templates from '../resume/index.js';
 import ExpressError from '../utilities/express-error.js';
 import {
+  extractDataFromResume,
   // rewriteAchievements,
   rewriteDescriptions,
   rewriteSentence
@@ -31,63 +34,20 @@ import {
   updateEducationsForResume,
   updateExperiencesForResume
 } from '../utilities/index.js';
+import { updateUserDB } from '../db/user.js';
+import { addNewEducationDB } from '../db/education.js';
+import { addNewExperienceDB } from '../db/experience.js';
+import { addNewProjectDB } from '../db/project.js';
+import moment from 'moment';
 
 const getUserData = async user_id => {
   const user = await User.findById(user_id)
-    .populate(['experiences', 'educations', 'skills.skill', 'projects'])
+    .populate(['experiences', 'educations', 'skills', 'projects'])
     .lean();
 
-  const {
-    name,
-    city,
-    state,
-    phone,
-    gender,
-    email,
-    achievements,
-    linkedin,
-    github,
-    twitter,
-    portfolio
-  } = user;
-
-  const technical_skills = user.skills
-    .filter(skill => skill.skill.type === 'technical_skills')
-    .sort(skillCompareFunction)
-    .map(skill => skill.skill.name);
-  const dev_tools = user.skills
-    .filter(skill => skill.skill.type === 'dev_tools')
-    .sort(skillCompareFunction)
-    .map(skill => skill.skill.name);
-  const core_subjects = user.skills
-    .filter(skill => skill.skill.type === 'core_subjects')
-    .sort(skillCompareFunction)
-    .map(skill => skill.skill.name);
-  const languages = user.skills
-    .filter(skill => skill.skill.type === 'languages')
-    .sort(skillCompareFunction)
-    .map(skill => skill.skill.name);
-
   return {
-    name,
-    city,
-    state,
-    phone,
-    gender,
-    email,
-    achievements,
-    projects: user.projects,
-    experiences: user.experiences,
-    educations: user.educations,
-    linkedin,
-    github,
-    profile_links: user.profile_links,
-    technical_skills,
-    dev_tools,
-    core_subjects,
-    languages,
-    twitter,
-    portfolio
+    ...user,
+    ...formatSkills(user.skills)
   };
 };
 
@@ -136,7 +96,13 @@ export const loadEngineeringResume = async (req, res) => {
   };
 
   const resume = templates['engineeringTemplates'][template_id](resumeData);
+
   const pdf = latex(resume);
+  pdf.pipe(res);
+
+  pdf.on('error', err => {
+    res.status(500).json({ error: 'Error generating the PDF!' });
+  });
 
   // const id = uuidv4();
   // pdf.pipe(
@@ -167,8 +133,6 @@ export const loadEngineeringResume = async (req, res) => {
   //     return;
   //   })
   // );
-
-  pdf.pipe(res);
 };
 
 export const saveEngineeringResume = async (req, res) => {
@@ -278,4 +242,60 @@ export const rewriteDescription = async (req, res) => {
     success: true,
     description: updatesDescription
   });
+};
+
+export const parseResume = async (req, res) => {
+  const { user } = req;
+  const dataBuffer = req.file.buffer;
+
+  if (!dataBuffer) {
+    return res.status(400).send('No file uploaded.');
+  }
+
+  const resumeText = await parsePDF(dataBuffer);
+  const data = await extractDataFromResume(resumeText);
+
+  try {
+    await updateUserDB({
+      user_id: user._id,
+      name: data.name,
+      phone: data.phone_number,
+      city: data.city,
+      state: data.city,
+      achievements: data.achievements
+    });
+  } catch (err) {
+    console.log(err);
+  }
+  for (let education of data.educations) {
+    try {
+      await addNewEducationDB({ ...education, user });
+    } catch (err) {
+      console.log(err);
+    }
+  }
+  for (let experience of data.experiences) {
+    try {
+      await addNewExperienceDB({
+        ...experience,
+        start_date: moment(new Date(experience.start_date)).format(
+          'DD-MM-YYYY'
+        ),
+        end_date: moment(new Date(experience.end_date)).format('DD-MM-YYYY'),
+        user
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  for (let project of data.projects) {
+    try {
+      await addNewProjectDB({ ...project, user });
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  res.send({ success: true, data });
 };

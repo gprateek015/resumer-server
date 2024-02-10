@@ -2,7 +2,7 @@ import Experience from '../models/experience.js';
 import User from '../models/user.js';
 
 export const fetchExperiencesFromDB = async user => {
-  const { experiences } = await User.findById(user._id).populate('experiences');
+  const experiences = await Experience.find({ user_id: user._id });
   return experiences;
 };
 

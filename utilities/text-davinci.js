@@ -113,3 +113,29 @@ export const rewriteAchievements = async achievements => {
     throw new ExpressError('', 500);
   }
 };
+
+export const extractDataFromResume = async resume_text => {
+  try {
+    const startTime = new Date();
+    console.log('Started...');
+    const chatCompletion = await openai.chat.completions.create({
+      messages: [
+        {
+          role: 'system',
+          content:
+            "You are an expert of data extraction from any text input. Your task is to extract relevant data from the resume text given to you. You need to return the output as an object in key value pairs. Start with name, email, phone number, city and state. Then for educations, each education should contain Institution name as institute_name, start year as start_year and end year as end_year and both must be numbers, scoring_type (must be either 'cgpa' or 'percentage'), maximum_score, score. Then for experiences, each experience must have company_name, position, mode which can be 'onsite', 'hybrid' or 'remote', location, start_date, end_date, then description. Then for projects, each project must contain Project name as name, skills_required (array of string), description. Then achievements as array of string. If any of the above is not mentioned add null in its position. Please be consistent in the key's name you give as it should be exactly same in every response and please give a valid json output. Also the description in experiences and projects should be array of string. experiences, educations and projects must be arrays."
+        },
+        {
+          role: 'user',
+          content: `This is the the resume text - ${resume_text}`
+        }
+      ],
+      model: 'gpt-3.5-turbo'
+    });
+    console.log(`Time took: ${(new Date() - startTime) / 1000} seconds`);
+    return JSON.parse(chatCompletion.choices[0].message.content);
+  } catch (err) {
+    console.log(err.response);
+    throw new ExpressError('AI API Error', 500);
+  }
+};

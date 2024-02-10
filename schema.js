@@ -40,11 +40,8 @@ export const userSchema = Joi.object({
   achievements: Joi.array().items(Joi.string()),
   skills: Joi.array().items(
     Joi.object({
-      id: Joi.string(),
+      id: Joi.string().optional(),
       name: Joi.string(),
-      proficiency: Joi.string()
-        .valid('beginner', 'moderate', 'expert')
-        .required(),
       type: Joi.string()
         .valid('technical_skills', 'dev_tools', 'core_subjects', 'languages')
         .required()
@@ -74,11 +71,8 @@ export const userUpdateSchema = Joi.object({
   achievements: Joi.array().items(Joi.string()),
   skills: Joi.array().items(
     Joi.object({
-      id: Joi.string(),
+      id: Joi.string().optional(),
       name: Joi.string(),
-      proficiency: Joi.string()
-        .valid('beginner', 'moderate', 'expert')
-        .required(),
       type: Joi.string()
         .valid('technical_skills', 'dev_tools', 'core_subjects', 'languages')
         .required()
@@ -94,6 +88,10 @@ export const userUpdateSchema = Joi.object({
 export const userLoginSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().required()
+});
+export const userSocialLoginSchema = Joi.object({
+  email: Joi.string().email().required(),
+  name: Joi.string().optional()
 });
 
 // ------------ Education Schemas ------------
@@ -168,17 +166,17 @@ export const projectSchema = Joi.object({
   name: Joi.string().required(),
   skills_required: Joi.array().items(Joi.string()),
   description: Joi.array().items(Joi.string()),
-  code_url: Joi.string(),
-  live_url: Joi.string(),
-  video_url: Joi.string()
+  code_url: Joi.string().allow(''),
+  live_url: Joi.string().allow(''),
+  video_url: Joi.string().allow('')
 });
 export const projectUpdateSchema = Joi.object({
   name: Joi.string(),
   skills_required: Joi.array().items(Joi.string()),
   description: Joi.array().items(Joi.string()),
-  code_url: Joi.string(),
-  live_url: Joi.string(),
-  video_url: Joi.string()
+  code_url: Joi.string().allow(''),
+  live_url: Joi.string().allow(''),
+  video_url: Joi.string().allow('')
 });
 export const projectDeleteSchema = Joi.object({
   project_id: Joi.string().required()

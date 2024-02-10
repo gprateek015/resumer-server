@@ -1,4 +1,7 @@
 import Skill from '../models/skill.js';
+import PDFParser from 'pdf2json';
+import { generateFromEmail, generateUsername } from 'unique-username-generator';
+import User from '../models/user.js';
 
 export const skillCompareFunction = (a, b) => {
   if (a.proficiency === b.proficiency) return 0;
@@ -32,10 +35,7 @@ export const findOrMakeSkills = (data = []) => {
           sk = await Skill.findOne({ name: skill.name });
         }
       }
-      return {
-        skill: sk,
-        proficiency: skill.proficiency
-      };
+      return sk;
     })
   );
 };
@@ -100,3 +100,49 @@ export const updateExperiencesForResume = (experiences = []) =>
     }
     return new_exp;
   });
+
+export const parsePDF = dataBuffer => {
+  return new Promise((resolve, reject) => {
+    const pdfParser = new PDFParser(this, 1);
+
+    pdfParser.on('pdfParser_dataError', reject);
+    pdfParser.on('pdfParser_dataReady', () =>
+      resolve(pdfParser.getRawTextContent())
+    );
+
+    pdfParser.parseBuffer(dataBuffer);
+  });
+};
+
+export const generateNewUsername = async ({ email }) => {
+  if (!email) return generateUsername();
+
+  let username = generateFromEmail(email, 3);
+  const user = await User.findOne({ username });
+  if (user) {
+    username = generateUsername();
+  }
+  return username;
+};
+
+export const formatSkills = skills => {
+  const technical_skills = skills
+    .filter(skill => skill.type === 'technical_skills')
+    .map(skill => ({ name: skill.name, _id: skill._id.toString() }));
+  const dev_tools = skills
+    .filter(skill => skill.type === 'dev_tools')
+    .map(skill => ({ name: skill.name, _id: skill._id.toString() }));
+  const core_subjects = skills
+    .filter(skill => skill.type === 'core_subjects')
+    .map(skill => ({ name: skill.name, _id: skill._id.toString() }));
+  const languages = skills
+    .filter(skill => skill.type === 'languages')
+    .map(skill => ({ name: skill.name, _id: skill._id.toString() }));
+
+  return {
+    technical_skills,
+    dev_tools,
+    core_subjects,
+    languages
+  };
+};

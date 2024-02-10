@@ -2,7 +2,7 @@ import Project from '../models/project.js';
 import User from '../models/user.js';
 
 export const fetchProjectsFromDB = async user => {
-  const { projects } = await User.findById(user._id).populate('projects');
+  const projects = await Project.find({ user_id: user._id });
   return projects;
 };
 

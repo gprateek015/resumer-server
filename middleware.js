@@ -15,7 +15,8 @@ import {
   projectSchema,
   projectDeleteSchema,
   projectUpdateSchema,
-  experienceUpdateSchema
+  experienceUpdateSchema,
+  userSocialLoginSchema
 } from './schema.js';
 
 import User from './models/user.js';
@@ -50,6 +51,11 @@ export const validateUserUpdate = async data => {
 };
 export const validateUserLogin = async data => {
   await userLoginSchema.validateAsync(data, {
+    abortEarly: false
+  });
+};
+export const validateSocialLogin = async data => {
+  await userSocialLoginSchema.validateAsync(data, {
     abortEarly: false
   });
 };

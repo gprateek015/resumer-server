@@ -2,7 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import cors from 'cors';
-import { Configuration, OpenAIApi } from 'openai';
+import OpenAI from 'openai';
 import { S3Client } from '@aws-sdk/client-s3';
 
 import userRouter from './routes/user.js';
@@ -21,10 +21,9 @@ mongoose.connect(process.env.DB_URI).then(
   err => console.log('Error connecting database ', err)
 );
 
-const configuration = new Configuration({
+export const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
-export const openai = new OpenAIApi(configuration);
 
 export const s3_client = new S3Client({
   region: 'ap-south-1'

@@ -27,7 +27,7 @@ const experienceSchema = new Schema(
     mode: {
       type: String,
       required: true,
-      enum: ['onsite', 'remote']
+      enum: ['onsite', 'remote', 'hybrid']
     },
     location: {
       type: String,

@@ -1,8 +1,7 @@
 import Education from '../models/education.js';
-import User from '../models/user.js';
 
 export const fetchEducationsFromDB = async user => {
-  const { educations } = await User.findById(user._id).populate('educations');
+  const educations = await Education.find({ user_id: user._id });
   return educations;
 };
 

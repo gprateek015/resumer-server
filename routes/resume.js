@@ -1,4 +1,5 @@
 import express from 'express';
+import multer from 'multer';
 
 import {
   deleteResume,
@@ -6,6 +7,7 @@ import {
   getResumeDetails,
   loadEngineeringResume,
   loadResume,
+  parseResume,
   rewriteDescription,
   rewriteStatement,
   saveEngineeringResume
@@ -13,9 +15,22 @@ import {
 import { authenticateUser } from '../middleware.js';
 import catchAsync from '../utilities/catch-async.js';
 
+const upload = multer();
+
 const router = express.Router();
 
 router.route('/data-new').post(authenticateUser, catchAsync(getNewResumeData));
+router
+  .route('/rewrite-statement')
+  .post(authenticateUser, catchAsync(rewriteStatement));
+
+router
+  .route('/rewrite-description')
+  .post(authenticateUser, catchAsync(rewriteDescription));
+
+router
+  .route('/parse-resume')
+  .post(authenticateUser, upload.single('resume'), catchAsync(parseResume));
 
 router
   .route('/engineering/:template_id/load')
@@ -31,13 +46,5 @@ router
   .delete(authenticateUser, catchAsync(deleteResume));
 
 router.route('/:resume_id/load').get(catchAsync(loadResume));
-
-router
-  .route('/rewrite-statement')
-  .post(authenticateUser, catchAsync(rewriteStatement));
-
-router
-  .route('/rewrite-description')
-  .post(authenticateUser, catchAsync(rewriteDescription));
 
 export default router;

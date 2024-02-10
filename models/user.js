@@ -14,21 +14,6 @@ const profileLinkSchema = new Schema(
   { _id: false }
 );
 
-const skillSchema = new Schema(
-  {
-    skill: {
-      type: Schema.Types.ObjectId,
-      ref: 'Skill'
-    },
-    proficiency: {
-      type: String,
-      required: true,
-      enum: ['beginner', 'moderate', 'expert']
-    }
-  },
-  { _id: 0 }
-);
-
 const userSchema = new Schema(
   {
     name: {
@@ -70,7 +55,7 @@ const userSchema = new Schema(
     },
     hash_password: {
       type: String,
-      required: true
+      required: false
     },
     profile_links: [profileLinkSchema], // Coding profiles
     linkedin: String,
@@ -94,7 +79,12 @@ const userSchema = new Schema(
         ref: 'Experience'
       }
     ],
-    skills: [skillSchema],
+    skills: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Skill'
+      }
+    ],
     educations: [
       {
         type: Schema.Types.ObjectId,
