@@ -43,7 +43,7 @@ app.use('/skill', skillRouter);
 app.use('/resume', resumeRouter);
 
 app.get('/', async (req, res) => {
-  res.status(200).send('Server up and running!');
+  res.status(200).send('Server up and running!!!');
 });
 
 app.all('*', async (req, res) => {
