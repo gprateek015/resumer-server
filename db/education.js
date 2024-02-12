@@ -31,8 +31,6 @@ export const addNewEducationDB = async ({
   });
 
   await newEducation.save();
-  user.educations.push(newEducation);
-  await user.save();
 
   return newEducation;
 };

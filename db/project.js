@@ -24,10 +24,8 @@ export const addNewProjectDB = async ({
     code_url,
     user_id: user._id
   });
-  user.projects.push(newProject);
 
   await newProject.save();
-  await user.save();
 
   return newProject;
 };

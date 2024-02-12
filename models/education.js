@@ -62,16 +62,5 @@ const educationSchema = new Schema(
   }
 );
 
-educationSchema.post('findOneAndDelete', async function (education, next) {
-  if (education) {
-    const user = await User.findById(education.user_id);
-    user.educations = user.educations.filter(exp => {
-      return exp.toString() !== education._id.toString();
-    });
-    await user.save();
-  }
-  next();
-});
-
 const Education = model('Education', educationSchema);
 export default Education;

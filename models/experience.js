@@ -46,14 +46,5 @@ const experienceSchema = new Schema(
   }
 );
 
-experienceSchema.post('findOneAndDelete', async function (experience, next) {
-  const user = await User.findById(experience.user_id);
-  user.experiences = user.experiences.filter(exp => {
-    return exp.toString() !== experience._id.toString();
-  });
-  await user.save();
-  next();
-});
-
 const Experience = model('Experience', experienceSchema);
 export default Experience;

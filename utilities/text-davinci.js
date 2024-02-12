@@ -135,7 +135,42 @@ export const extractDataFromResume = async resume_text => {
     console.log(`Time took: ${(new Date() - startTime) / 1000} seconds`);
     return JSON.parse(chatCompletion.choices[0].message.content);
   } catch (err) {
-    console.log(err.response);
+    console.log(err);
+    throw new ExpressError('AI API Error', 500);
+  }
+};
+
+export const rewriteResumeData = async ({
+  job_description,
+  experiences,
+  projects,
+  achievements
+}) => {
+  try {
+    const startTime = new Date();
+    console.log('Started...');
+    const chatCompletion = await openai.chat.completions.create({
+      messages: [
+        {
+          role: 'system',
+          content:
+            'Your are a talented resume writer who uses action words and produces ATS friendly resumes based on a particular job description. I will provide a job description and some content and you need to give a json object which have to follow a specified order for the keys in the output in order to represent each content. It should strictly follow these keys for every rewrites - 1. WorkExperiences 2. Project 3. Acheivements Note - You have to rewrite the content so it is different from the original content and every sentence should be in a new line. Return the data in the exact same format it will be provided, the same keys experiences, projects, acheivements should be reutrned every time.'
+        },
+        {
+          role: 'user',
+          content: `This is the the job description - '${job_description}'. These are the details which you have to rewrite - 'work_experiences as experiences' - ${JSON.stringify(
+            experiences
+          )}. 'projects' - ${JSON.stringify(
+            projects
+          )}. 'acheivements' - ${JSON.stringify(achievements)}. `
+        }
+      ],
+      model: 'gpt-3.5-turbo'
+    });
+    console.log(`Time took: ${(new Date() - startTime) / 1000} seconds`);
+    return JSON.parse(chatCompletion.choices[0].message.content);
+  } catch (err) {
+    console.log(err);
     throw new ExpressError('AI API Error', 500);
   }
 };

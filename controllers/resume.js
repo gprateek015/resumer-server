@@ -12,6 +12,7 @@ import {
   extractDataFromResume,
   // rewriteAchievements,
   rewriteDescriptions,
+  rewriteResumeData,
   rewriteSentence
 } from '../utilities/text-davinci.js';
 import Resume from '../models/resume.js';
@@ -19,6 +20,9 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { s3_client } from '../index.js';
 import {
+  deleteEducationsDB,
+  deleteExperiencesDB,
+  deleteProjectsDB,
   deleteResumeDB,
   getResumeDetailsDB,
   saveResumeDB,
@@ -39,15 +43,25 @@ import { addNewEducationDB } from '../db/education.js';
 import { addNewExperienceDB } from '../db/experience.js';
 import { addNewProjectDB } from '../db/project.js';
 import moment from 'moment';
+import { deleteEducation } from './education.js';
+import Experience from '../models/experience.js';
+import Project from '../models/project.js';
+import Education from '../models/education.js';
 
 const getUserData = async user_id => {
-  const user = await User.findById(user_id)
-    .populate(['experiences', 'educations', 'skills', 'projects'])
-    .lean();
+  const user = await User.findById(user_id).populate('skills').lean();
+  const experiences = await Experience.find({ user_id }).lean();
+  const projects = await Project.find({ user_id }).lean();
+  const educations = await Education.find({ user_id }).lean();
 
   return {
     ...user,
-    ...formatSkills(user.skills)
+    ...formatSkills(user.skills),
+    experiences,
+    projects,
+    educations,
+    hash_password: undefined,
+    skills: undefined
   };
 };
 
@@ -55,23 +69,13 @@ export const getNewResumeData = async (req, res) => {
   const user_id = req.user._id;
   const { rewrite = false } = req.query;
   const { job_description } = req.body;
-  const userData = await getUserData(user_id);
+  let userData = await getUserData(user_id);
 
-  if (rewrite === 'true') {
-    userData.experiences = await rewriteExperiences(
-      userData.experiences,
-      job_description
-    );
-
-    userData.projects = await rewriteProjects(
-      userData.projects,
-      job_description
-    );
-
-    userData.achievements = await rewriteAchievements(
-      userData.achievements,
-      job_description
-    );
+  if (rewrite === 'true' && job_description) {
+    const newData = await rewriteResumeData({ ...userData, job_description });
+    userData.experiences = newData.experiences;
+    userData.projects = newData.projects;
+    userData.achievements = newData.achievements;
   }
 
   res.status(200).send(userData);
@@ -251,6 +255,11 @@ export const parseResume = async (req, res) => {
   if (!dataBuffer) {
     return res.status(400).send('No file uploaded.');
   }
+
+  // deleting all educations, projects and experiences
+  await deleteEducationsDB({ user_id: user._id });
+  await deleteExperiencesDB({ user_id: user._id });
+  await deleteProjectsDB({ user_id: user._id });
 
   const resumeText = await parsePDF(dataBuffer);
   const data = await extractDataFromResume(resumeText);

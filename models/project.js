@@ -33,14 +33,5 @@ const projectSchema = new Schema(
   }
 );
 
-projectSchema.post('findOneAndDelete', async function (project, next) {
-  const user = await User.findById(project.user_id);
-  user.projects = user.projects.filter(exp => {
-    return exp.toString() !== project._id.toString();
-  });
-  await user.save();
-  next();
-});
-
 const Project = model('Project', projectSchema);
 export default Project;

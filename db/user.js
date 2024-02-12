@@ -29,7 +29,6 @@ export const fetchSelfDB = async ({ user_id, email, username }) => {
   const user = await User.findOne({
     $or: [{ _id: user_id }, { email }, { username }]
   }).populate('skills');
-  // .populate(['experiences', 'educations', 'skills', 'projects']);
 
   return {
     ...user.toJSON(),

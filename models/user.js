@@ -67,28 +67,10 @@ const userSchema = new Schema(
         type: String
       }
     ],
-    projects: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'Project'
-      }
-    ],
-    experiences: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'Experience'
-      }
-    ],
     skills: [
       {
         type: Schema.Types.ObjectId,
         ref: 'Skill'
-      }
-    ],
-    educations: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'Education'
       }
     ],
     referred_by: {

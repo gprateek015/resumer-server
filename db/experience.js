@@ -24,10 +24,8 @@ export const addNewExperienceDB = async ({
     mode,
     user_id: user._id
   });
-  user.experiences.push(newExperience);
 
   await newExperience.save();
-  await user.save();
   return newExperience;
 };
 

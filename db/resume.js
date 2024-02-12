@@ -1,3 +1,6 @@
+import Education from '../models/education.js';
+import Experience from '../models/experience.js';
+import Project from '../models/project.js';
 import Resume from '../models/resume.js';
 
 export const saveResumeDB = async ({
@@ -37,4 +40,14 @@ export const updateResumeDetailsDB = async ({ resume_id, user_id, data }) => {
       data
     }
   );
+};
+
+export const deleteExperiencesDB = async ({ user_id }) => {
+  await Experience.deleteMany({ user_id });
+};
+export const deleteEducationsDB = async ({ user_id }) => {
+  await Education.deleteMany({ user_id });
+};
+export const deleteProjectsDB = async ({ user_id }) => {
+  await Project.deleteMany({ user_id });
 };
