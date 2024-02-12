@@ -1,4 +1,4 @@
-FROM node:16-alpine
+FROM node:20-alpine
 
 RUN apk add --update --no-cache python3 make g++ py3-pip biber texlive-full
 
@@ -8,6 +8,8 @@ COPY package.json yarn.lock ./
 
 RUN yarn install
 
+RUN yarn global add pm2
+
 COPY . .
 
-CMD [ "node", "index.js" ]
+CMD [ "pm2-runtime",  "start", "index.js" ]
