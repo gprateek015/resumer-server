@@ -31,12 +31,6 @@ export const s3_client = new S3Client({
   region: 'ap-south-1'
 });
 
-// SSL certificate
-const options = {
-  key: fs.readFileSync('/etc/ssl/certs/privkey.pem'),
-  cert: fs.readFileSync('/etc/ssl/certs/fullchain.pem')
-};
-
 const app = express();
 
 app.use(express.urlencoded({ extended: true }));
@@ -68,12 +62,21 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 8000;
-const HTTPS_PORT = process.env.HTTPS_PORT || 443;
 
 app.listen(PORT, () => {
   console.log(`Server listening to port: ${PORT}`);
 });
 
-https.createServer(options, app).listen(HTTPS_PORT, () => {
-  console.log(`HTTPS Server running on port ${HTTPS_PORT}`);
-});
+if (process.env.NODE_ENV === 'production') {
+  // SSL certificate
+  const options = {
+    key: fs.readFileSync('/etc/letsencrypt/privkey.pem'),
+    cert: fs.readFileSync('/etc/letsencrypt/fullchain.pem')
+  };
+
+  const HTTPS_PORT = process.env.HTTPS_PORT || 443;
+
+  https.createServer(options, app).listen(HTTPS_PORT, () => {
+    console.log(`HTTPS Server running on port ${HTTPS_PORT}`);
+  });
+}
