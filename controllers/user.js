@@ -40,12 +40,6 @@ export const registerUser = async (req, res) => {
   const json_secret_key = process.env.JWT_SECRET_KEY;
   const token = jwt.sign(newUser._id.toString(), json_secret_key);
 
-  await newUser.save();
-
-  if (!newUser) {
-    throw new ExpressError("User couldn't be registered", 500);
-  }
-
   res.status(200).send({
     success: true,
     token,
@@ -123,6 +117,7 @@ export const fetchSelf = async (req, res) => {
 export const loginUser = async (req, res) => {
   const { email, password } = req.body;
   const user = await fetchSelfDB({ email });
+
   if (user) {
     const match = await bcrypt.compare(password, user.hash_password);
     if (match) {

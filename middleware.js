@@ -27,6 +27,7 @@ export const authenticateUser = async (req, res, next) => {
     const json_secret_key = process.env.JWT_SECRET_KEY;
     const user_id = jwt.verify(authorization, json_secret_key);
     const user = await User.findById(user_id);
+
     if (user) {
       req.user = user;
       next();

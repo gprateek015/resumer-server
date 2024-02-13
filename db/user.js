@@ -1,4 +1,5 @@
 import User from '../models/user.js';
+import ExpressError from '../utilities/express-error.js';
 
 export const registerUserDB = async ({
   name,
@@ -17,8 +18,13 @@ export const registerUserDB = async ({
     referred_by
   });
 
+  if (!newUser) {
+    throw new ExpressError("User couldn't be registered", 500);
+  }
+  await newUser?.save();
+
   return {
-    ...newUser.toJSON(),
+    ...newUser?.toJSON(),
     educations: undefined,
     experiences: undefined,
     projects: undefined
@@ -30,8 +36,10 @@ export const fetchSelfDB = async ({ user_id, email, username }) => {
     $or: [{ _id: user_id }, { email }, { username }]
   }).populate('skills');
 
+  if (!user) throw new ExpressError('User does not exist', 404);
+
   return {
-    ...user.toJSON(),
+    ...user?.toJSON(),
     educations: undefined,
     experiences: undefined,
     projects: undefined
