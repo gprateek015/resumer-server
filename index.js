@@ -67,16 +67,14 @@ app.listen(PORT, () => {
   console.log(`Server listening to port: ${PORT}`);
 });
 
-if (process.env.NODE_ENV === 'production') {
-  // SSL certificate
-  const options = {
-    key: fs.readFileSync('/etc/letsencrypt/privkey.pem'),
-    cert: fs.readFileSync('/etc/letsencrypt/fullchain.pem')
-  };
+// SSL certificate
+const options = {
+  key: fs.readFileSync(process.env.SSL_KEY_PATH),
+  cert: fs.readFileSync(process.env.SSL_CERT_PATH)
+};
 
-  const HTTPS_PORT = process.env.HTTPS_PORT || 443;
+const HTTPS_PORT = process.env.HTTPS_PORT || 443;
 
-  https.createServer(options, app).listen(HTTPS_PORT, () => {
-    console.log(`HTTPS Server running on port ${HTTPS_PORT}`);
-  });
-}
+https.createServer(options, app).listen(HTTPS_PORT, () => {
+  console.log(`HTTPS Server running on port ${HTTPS_PORT}`);
+});
