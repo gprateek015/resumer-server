@@ -4,6 +4,8 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import OpenAI from 'openai';
 import { S3Client } from '@aws-sdk/client-s3';
+import https from 'https';
+import fs from 'fs';
 
 import userRouter from './routes/user.js';
 import experienceRouter from './routes/experience.js';
@@ -28,6 +30,12 @@ export const openai = new OpenAI({
 export const s3_client = new S3Client({
   region: 'ap-south-1'
 });
+
+// SSL certificate
+const options = {
+  key: fs.readFileSync('/etc/ssl/certs/privkey.pem'),
+  cert: fs.readFileSync('/etc/ssl/certs/fullchain.pem')
+};
 
 const app = express();
 
@@ -60,6 +68,12 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 8000;
+const HTTPS_PORT = process.env.HTTPS_PORT || 443;
+
 app.listen(PORT, () => {
   console.log(`Server listening to port: ${PORT}`);
+});
+
+https.createServer(options, app).listen(HTTPS_PORT, () => {
+  console.log(`HTTPS Server running on port ${HTTPS_PORT}`);
 });
