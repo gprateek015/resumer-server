@@ -11,6 +11,7 @@ import {
   formatSkills,
   generateNewUsername
 } from '../utilities/index.js';
+import OTP from '../models/otp.js';
 
 export const registerUser = async (req, res) => {
   if (!req.body.username) {
@@ -18,6 +19,12 @@ export const registerUser = async (req, res) => {
   }
 
   const { name, email, password, username } = req.body;
+
+  const otp = await OTP.findOne({ email });
+  if (!otp?.verified) {
+    throw new ExpressError('Email is not verified', 400);
+  }
+
   const saltRounds = 10;
   const hash_password = await bcrypt.hash(password, saltRounds);
 

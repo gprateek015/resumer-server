@@ -58,6 +58,7 @@ const userSchema = new Schema(
       required: false
     },
     profile_links: [profileLinkSchema], // Coding profiles
+    certificates: [profileLinkSchema], // Coding profiles
     linkedin: String,
     github: String,
     twitter: String,

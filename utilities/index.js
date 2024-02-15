@@ -2,6 +2,8 @@ import Skill from '../models/skill.js';
 import PDFParser from 'pdf2json';
 import { generateFromEmail, generateUsername } from 'unique-username-generator';
 import User from '../models/user.js';
+import randomstring from 'randomstring';
+import nodemailer from 'nodemailer';
 
 export const skillCompareFunction = (a, b) => {
   if (a.proficiency === b.proficiency) return 0;
@@ -145,4 +147,32 @@ export const formatSkills = skills => {
     core_subjects,
     languages
   };
+};
+
+export const generateRandomOTP = ({ length }) => {
+  return randomstring.generate({
+    length: length || 6,
+    charset: 'numeric'
+  });
+};
+
+export const sendMail = async ({ email, message, subject }) => {
+  let transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false,
+    auth: {
+      user: 'airesumer1@gmail.com',
+      pass: process.env.GOOGLE_PASSWORD
+    }
+  });
+
+  let info = await transporter.sendMail({
+    from: 'airesumer1@gmail.com',
+    to: email,
+    subject,
+    text: message
+  });
+
+  return `Mail sent: ${info.messageId}`;
 };

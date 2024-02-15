@@ -322,7 +322,27 @@ const addAchievementsSection = achievements => {
   });
 
   section += `\\resumeItemListEnd
-  \\end{itemize}`;
+  \\end{itemize} \n`;
+  return section;
+};
+
+const addCertificatesSection = certificates => {
+  if (!certificates?.length) return '';
+
+  const addCertificate = ({ name, link }) => {
+    return `\\item{\\href{${link}}{${serializedescription(name)}}} \n`;
+  };
+
+  let section = `\n \\section{Certificates}
+  \\begin{itemize}[leftmargin=0.15in, label={}]
+  \\item \\resumeItemListStart \n`;
+
+  certificates.forEach(certificate => {
+    section += addCertificate(certificate);
+  });
+
+  section += `\\resumeItemListEnd
+  \\end{itemize}\n`;
   return section;
 };
 
@@ -344,7 +364,8 @@ const template1 = ({
   dev_tools = [],
   core_subjects = [],
   profile_links = [],
-  achievements = []
+  achievements = [],
+  certificates = []
 }) => {
   let resume =
     addBeforeResumeText() +
@@ -369,7 +390,8 @@ const template1 = ({
       languages: languages
     }) +
     addProfileLinksSection(profile_links) +
-    addAchievementsSection(achievements);
+    addAchievementsSection(achievements) +
+    addCertificatesSection(certificates);
 
   resume += '\n\\end{document}';
   return resume;

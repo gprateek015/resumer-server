@@ -152,7 +152,7 @@ export const saveEngineeringResume = async (req, res) => {
     );
 
   const { user } = req;
-  await saveResume({
+  await saveResumeDB({
     user,
     template_id,
     template_category: 'engineeringTemplates',

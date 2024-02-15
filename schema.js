@@ -37,6 +37,12 @@ export const userSchema = Joi.object({
       link: Joi.string().required()
     })
   ),
+  certificates: Joi.array().items(
+    Joi.object({
+      name: Joi.string().required(),
+      link: Joi.string().required()
+    })
+  ),
   achievements: Joi.array().items(Joi.string()),
   skills: Joi.array().items(
     Joi.object({
@@ -66,6 +72,12 @@ export const userUpdateSchema = Joi.object({
     Joi.object({
       name: Joi.string(),
       link: Joi.string()
+    })
+  ),
+  certificates: Joi.array().items(
+    Joi.object({
+      name: Joi.string().required(),
+      link: Joi.string().required()
     })
   ),
   achievements: Joi.array().items(Joi.string()),

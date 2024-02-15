@@ -13,6 +13,7 @@ import educationRouter from './routes/education.js';
 import skillRouter from './routes/skill.js';
 import projectRouter from './routes/project.js';
 import resumeRouter from './routes/resume.js';
+import optRouter from './routes/otp.js';
 
 if (process.env.NODE_ENV !== 'production') {
   dotenv.config();
@@ -43,6 +44,7 @@ app.use('/education', educationRouter);
 app.use('/project', projectRouter);
 app.use('/skill', skillRouter);
 app.use('/resume', resumeRouter);
+app.use('/otp', optRouter);
 
 app.get('/', async (req, res) => {
   res.status(200).send('Server up and running!!!');
