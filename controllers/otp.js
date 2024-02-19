@@ -5,7 +5,7 @@ import User from '../models/user.js';
 
 export const generateOtp = async (req, res) => {
   const { email, phone_no } = req.body;
-  const otp = generateRandomOTP({ length: 4 });
+  const otp = generateRandomOTP({ length: 6 });
   const expiry = Date.now() + 5 * 60 * 1000;
 
   const user = await User.findOne({ email });
