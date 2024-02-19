@@ -53,8 +53,8 @@ const addHeadingSection = ({
       \\begin{supertabular}{ll}
       \\footnotesize\\faPhone & ${phone} \\\\
       \\footnotesize\\faEnvelope & \\href{mailto:${email}}{${email}} \\\\
-      \\footnotesize\\faLinkedin & \\href{${linkedin.link}}{Linkedin} \\\\
-      \\footnotesize\\faGithub & \\href{${github.link}}{Github} \\\\
+      \\footnotesize\\faLinkedin & \\href{${linkedin}}{Linkedin} \\\\
+      \\footnotesize\\faGithub & \\href{${github}}{Github} \\\\
       \\end{supertabular}
       \\switchcolumn*
     `;

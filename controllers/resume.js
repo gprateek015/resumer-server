@@ -270,7 +270,7 @@ export const parseResume = async (req, res) => {
       name: data.name,
       phone: data.phone_number,
       city: data.city,
-      state: data.city,
+      state: data.state,
       achievements: data.achievements
     });
   } catch (err) {
