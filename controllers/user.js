@@ -88,7 +88,6 @@ export const socialLogin = async (req, res) => {
       referral_code,
       referred_by
     });
-    await newUser.save();
 
     user = newUser;
     // }
