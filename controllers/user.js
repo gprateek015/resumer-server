@@ -61,19 +61,24 @@ export const registerUser = async (req, res) => {
 
 export const socialLogin = async (req, res) => {
   const { name, email } = req.body;
-
-  let user = await fetchSelfDB({ email });
-
-  if (!user) {
+  let user;
+  try {
+    user = await fetchSelfDB({ email });
+  } catch (err) {
+    // if (err.message) {
     let referred_by = null;
     if (req.body.invite_code) {
-      referred_by = await User.findOne({ referral_code: req.body.invite_code });
+      referred_by = await User.findOne({
+        referral_code: req.body.invite_code
+      });
     }
 
     const referral_code = referralCodeGenerator.alphaNumeric('lowercase', 4, 3);
 
     if (!req.body.username) {
-      req.body.username = await generateNewUsername({ email: req.body.email });
+      req.body.username = await generateNewUsername({
+        email: req.body.email
+      });
     }
 
     const newUser = await registerUserDB({
@@ -86,6 +91,7 @@ export const socialLogin = async (req, res) => {
     await newUser.save();
 
     user = newUser;
+    // }
   }
 
   const json_secret_key = process.env.JWT_SECRET_KEY;
