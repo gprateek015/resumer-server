@@ -12,6 +12,9 @@ import {
   generateNewUsername
 } from '../utilities/index.js';
 import OTP from '../models/otp.js';
+import { addNewExperienceDB } from '../db/experience.js';
+import { addNewProjectDB } from '../db/project.js';
+import { addNewEducationDB } from '../db/education.js';
 
 export const registerUser = async (req, res) => {
   if (!req.body.username) {
@@ -114,9 +117,6 @@ export const socialLogin = async (req, res) => {
 export const fetchSelf = async (req, res) => {
   const { user } = req;
   const userData = await fetchSelfDB({ user_id: user._id });
-  if (!userData) {
-    throw new ExpressError('User not found', 401);
-  }
 
   const skills = formatSkills(userData.skills);
 
@@ -165,10 +165,23 @@ export const updateUser = async (req, res) => {
     github,
     twitter,
     portfolio,
-    onboarding_completed
+    onboarding_completed,
+    experiences = [],
+    projects = [],
+    educations = []
   } = req.body;
 
   const skills = await findOrMakeSkills(req.body.skills);
+
+  for (let exp of experiences) {
+    await addNewExperienceDB({ ...exp, user: req.user });
+  }
+  for (let project of projects) {
+    await addNewProjectDB({ ...project, user: req.user });
+  }
+  for (let edu of educations) {
+    await addNewEducationDB({ ...edu, user: req.user });
+  }
 
   const user = await updateUserDB({
     user_id,
@@ -198,21 +211,13 @@ export const updateUser = async (req, res) => {
 
 export const getPublicProfile = async (req, res) => {
   const { username } = req.params;
-  const user = await fetchSelfDB({ username });
-
-  if (!user) {
-    throw new ExpressError('User not found', 401);
-  }
+  const userData = await fetchSelfDB({ username });
 
   res.status(200).send({
     success: true,
     user: {
-      ...user,
-      skills: formatSkills(user.skills),
-      resumes: [
-        user?.resumes?.find(resume => resume === user.default_resume_id) ||
-          user.resumes?.[0]
-      ],
+      ...userData,
+      skills: formatSkills(userData.skills),
       hash_password: undefined,
       referral_code: undefined,
       referred_by: undefined,

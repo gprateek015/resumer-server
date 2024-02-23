@@ -94,7 +94,10 @@ export const userUpdateSchema = Joi.object({
   github: Joi.string().allow('').optional(),
   twitter: Joi.string().allow('').optional(),
   portfolio: Joi.string().allow('').optional(),
-  onboarding_completed: Joi.bool().optional()
+  onboarding_completed: Joi.bool().optional(),
+  experiences: Joi.array(),
+  projects: Joi.array(),
+  educations: Joi.array()
 });
 
 export const userLoginSchema = Joi.object({

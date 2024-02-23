@@ -142,10 +142,10 @@ export const formatSkills = skills => {
     .map(skill => ({ name: skill.name, _id: skill._id.toString() }));
 
   return {
-    technical_skills,
-    dev_tools,
-    core_subjects,
-    languages
+    ...(technical_skills?.length && technical_skills),
+    ...(dev_tools?.length && dev_tools),
+    ...(core_subjects?.length && core_subjects),
+    ...(languages?.length && languages)
   };
 };
 
