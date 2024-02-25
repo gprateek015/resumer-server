@@ -264,8 +264,9 @@ export const parseResume = async (req, res) => {
   const resumeText = await parsePDF(dataBuffer);
   const data = await extractDataFromResume(resumeText);
 
+  let userData = {};
   try {
-    await updateUserDB({
+    userData = await updateUserDB({
       user_id: user._id,
       name: data.name,
       phone: data.phone_number,
@@ -276,16 +277,19 @@ export const parseResume = async (req, res) => {
   } catch (err) {
     console.log(err);
   }
+  let educations = [];
   for (let education of data.educations) {
     try {
-      await addNewEducationDB({ ...education, user });
+      const data = await addNewEducationDB({ ...education, user });
+      educations.push(data.toJSON());
     } catch (err) {
       console.log(err);
     }
   }
+  let experiences = [];
   for (let experience of data.experiences) {
     try {
-      await addNewExperienceDB({
+      const data = await addNewExperienceDB({
         ...experience,
         start_date: moment(new Date(experience.start_date)).format(
           'DD-MM-YYYY'
@@ -293,18 +297,24 @@ export const parseResume = async (req, res) => {
         end_date: moment(new Date(experience.end_date)).format('DD-MM-YYYY'),
         user
       });
+      experiences.push(data.toJSON());
     } catch (err) {
       console.log(err);
     }
   }
 
+  let projects = [];
   for (let project of data.projects) {
     try {
-      await addNewProjectDB({ ...project, user });
+      const data = await addNewProjectDB({ ...project, user });
+      projects.push(data.toJSON());
     } catch (err) {
       console.log(err);
     }
   }
 
-  res.send({ success: true, data });
+  res.send({
+    success: true,
+    data: { ...userData.toJSON(), educations, experiences, projects }
+  });
 };

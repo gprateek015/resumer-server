@@ -193,9 +193,7 @@ export const projectUpdateSchema = Joi.object({
   live_url: Joi.string().allow(''),
   video_url: Joi.string().allow('')
 });
-export const projectDeleteSchema = Joi.object({
-  project_id: Joi.string().required()
-});
+export const projectDeleteSchema = Joi.object({});
 
 // ------------ Skill Schemas ------------
 export const skillSchema = Joi.object({

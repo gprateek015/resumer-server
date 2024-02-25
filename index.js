@@ -36,7 +36,15 @@ const app = express();
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      'https://resumer.cloud',
+      'https://www.resumer.cloud',
+      'http://localhost:3000'
+    ]
+  })
+);
 
 app.use('/user', userRouter);
 app.use('/experience', experienceRouter);
