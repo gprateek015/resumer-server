@@ -176,3 +176,8 @@ export const sendMail = async ({ email, message, subject }) => {
 
   return `Mail sent: ${info.messageId}`;
 };
+
+export const setDefaultRCoin = async () => {
+  console.log('running');
+  await User.updateRCoinsForAllUsers(process.env.TOTAL_RCOIN_TO_GIVE);
+};

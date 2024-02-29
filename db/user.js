@@ -7,7 +7,8 @@ export const registerUserDB = async ({
   username,
   hash_password,
   referral_code,
-  referred_by
+  referred_by,
+  r_coins
 }) => {
   const newUser = new User({
     name,
@@ -15,7 +16,8 @@ export const registerUserDB = async ({
     username,
     hash_password,
     referral_code,
-    referred_by
+    referred_by,
+    r_coins
   });
 
   if (!newUser) {

@@ -44,7 +44,8 @@ export const registerUser = async (req, res) => {
     username,
     hash_password,
     referral_code,
-    referred_by
+    referred_by,
+    r_coins: process.env.TOTAL_RCOIN_TO_GIVE
   });
 
   const json_secret_key = process.env.JWT_SECRET_KEY;
@@ -89,7 +90,8 @@ export const socialLogin = async (req, res) => {
       email,
       username: req.body.username,
       referral_code,
-      referred_by
+      referred_by,
+      r_coins: process.env.TOTAL_RCOIN_TO_GIVE
     });
 
     user = newUser;

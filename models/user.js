@@ -101,6 +101,10 @@ const userSchema = new Schema(
     onboarding_completed: {
       type: Boolean,
       default: false
+    },
+    r_coins: {
+      type: Number,
+      default: 0
     }
   },
   {
@@ -111,6 +115,23 @@ const userSchema = new Schema(
     toObject: { virtuals: true }
   }
 );
+
+userSchema.statics.updateRCoinsForAllUsers = async function (r_coins) {
+  try {
+    console.log('started');
+    const result = await this.updateMany(
+      {},
+      { $set: { r_coins } },
+      { upsert: true }
+    );
+
+    console.log(result);
+
+    console.log(`Updated ${result.modifiedCount} users.`);
+  } catch (error) {
+    console.error('Error updating users:', error);
+  }
+};
 
 const User = model('User', userSchema);
 export default User;

@@ -6,6 +6,7 @@ import OpenAI from 'openai';
 import { S3Client } from '@aws-sdk/client-s3';
 import https from 'https';
 import fs from 'fs';
+import cron from 'node-cron';
 
 import userRouter from './routes/user.js';
 import experienceRouter from './routes/experience.js';
@@ -14,6 +15,7 @@ import skillRouter from './routes/skill.js';
 import projectRouter from './routes/project.js';
 import resumeRouter from './routes/resume.js';
 import optRouter from './routes/otp.js';
+import { setDefaultRCoin } from './utilities/index.js';
 
 if (process.env.NODE_ENV !== 'production') {
   dotenv.config();
@@ -69,6 +71,11 @@ app.use((err, req, res, next) => {
   res.status(status_code).send({
     error: err.message
   });
+});
+
+cron.schedule('0 4 * * *', setDefaultRCoin, {
+  timezone: 'Asia/Kolkata',
+  scheduled: true
 });
 
 const PORT = process.env.PORT || 8000;
