@@ -15,6 +15,9 @@ import OTP from '../models/otp.js';
 import { addNewExperienceDB } from '../db/experience.js';
 import { addNewProjectDB } from '../db/project.js';
 import { addNewEducationDB } from '../db/education.js';
+import Education from '../models/education.js';
+import Project from '../models/project.js';
+import Experience from '../models/experience.js';
 
 export const registerUser = async (req, res) => {
   if (!req.body.username) {
@@ -174,6 +177,12 @@ export const updateUser = async (req, res) => {
   } = req.body;
 
   const skills = await findOrMakeSkills(req.body.skills);
+
+  if (onboarding_completed) {
+    await Education.deleteMany({ user_id });
+    await Project.deleteMany({ user_id });
+    await Experience.deleteMany({ user_id });
+  }
 
   for (let exp of experiences) {
     await addNewExperienceDB({ ...exp, user: req.user });
