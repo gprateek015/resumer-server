@@ -23,7 +23,12 @@ import User from './models/user.js';
 
 export const authenticateUser = async (req, res, next) => {
   try {
-    const { authorization } = req.headers;
+    let { authorization } = req.headers;
+
+    if (!authorization) {
+      authorization = req.session.authorization;
+    }
+
     const json_secret_key = process.env.JWT_SECRET_KEY;
     const user_id = jwt.verify(authorization, json_secret_key);
     const user = await User.findById(user_id);

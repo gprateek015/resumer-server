@@ -7,6 +7,7 @@ import { S3Client } from '@aws-sdk/client-s3';
 import https from 'https';
 import fs from 'fs';
 import cron from 'node-cron';
+import cookieSession from 'cookie-session';
 
 import userRouter from './routes/user.js';
 import experienceRouter from './routes/experience.js';
@@ -43,8 +44,17 @@ app.use(
     origin: [
       'https://resumer.cloud',
       'https://www.resumer.cloud',
-      'http://localhost:3000'
-    ]
+      'http://localhost:3000',
+      'chrome-extension://*'
+    ],
+    credentials: true
+  })
+);
+app.use(
+  cookieSession({
+    name: 'session',
+    keys: [process.env.SECRET_KEY],
+    maxAge: 24 * 60 * 60 * 1000
   })
 );
 

@@ -54,6 +54,8 @@ export const registerUser = async (req, res) => {
   const json_secret_key = process.env.JWT_SECRET_KEY;
   const token = jwt.sign(newUser._id.toString(), json_secret_key);
 
+  req.session.authorization = token;
+
   res.status(200).send({
     success: true,
     token,
@@ -101,12 +103,14 @@ export const socialLogin = async (req, res) => {
     // }
   }
 
-  const json_secret_key = process.env.JWT_SECRET_KEY;
-  const token = jwt.sign(user._id.toString(), json_secret_key);
-
   if (!user) {
     throw new ExpressError("User couldn't be registered", 500);
   }
+
+  const json_secret_key = process.env.JWT_SECRET_KEY;
+  const token = jwt.sign(user._id.toString(), json_secret_key);
+
+  req.session.authorization = token;
 
   res.status(200).send({
     success: true,
@@ -140,6 +144,8 @@ export const loginUser = async (req, res) => {
     if (match) {
       const json_secret_key = process.env.JWT_SECRET_KEY;
       const token = jwt.sign(user._id.toString(), json_secret_key);
+
+      req.session.authorization = token;
 
       res.status(200).send({
         success: true,

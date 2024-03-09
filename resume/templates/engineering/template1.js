@@ -185,7 +185,7 @@ const addExperienceSection = experiences => {
 
     experience += '\\resumeItemListStart';
 
-    description.forEach(point => {
+    description?.forEach(point => {
       const serialisedPoint = serializedescription(point);
       experience += `\\resumeItem{${serialisedPoint}}`;
     });
@@ -216,7 +216,7 @@ const addProjectsSection = projects => {
     live_url,
     video_url,
     name,
-    skills_required
+    skills_required = []
   }) => {
     let project = `\\resumeProjectHeading
     {\\textbf{${name}} $|$ \\emph{${skills_required.join(', ')}}  $|$ {\\href{${
@@ -224,7 +224,7 @@ const addProjectsSection = projects => {
     }}{${code_url ? 'Code' : live_url ? 'Live' : 'Video'}}}}{}
     \\resumeItemListStart`;
 
-    description.forEach(point => {
+    description?.forEach(point => {
       const serialisedPoint = serializedescription(point);
       project += `\\resumeItem {${serialisedPoint}}`;
     });
@@ -298,7 +298,7 @@ const addProfileLinksSection = links => {
   \\begin{itemize}[leftmargin=0.4in, label={}]
   \\resumeItem{`;
 
-  links.forEach(link => {
+  links?.forEach(link => {
     section += addLink(link);
   });
 
@@ -317,7 +317,7 @@ const addAchievementsSection = achievements => {
   \\begin{itemize}[leftmargin=0.15in, label={}]
   \\item \\resumeItemListStart`;
 
-  achievements.forEach(achievement => {
+  achievements?.forEach(achievement => {
     section += addAchievement(achievement);
   });
 
@@ -337,7 +337,7 @@ const addCertificatesSection = certificates => {
   \\begin{itemize}[leftmargin=0.15in, label={}]
   \\item \\resumeItemListStart \n`;
 
-  certificates.forEach(certificate => {
+  certificates?.forEach(certificate => {
     section += addCertificate(certificate);
   });
 
