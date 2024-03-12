@@ -28,6 +28,7 @@ export const authenticateUser = async (req, res, next) => {
     if (!authorization) {
       authorization = req.session.authorization;
     }
+    // console.log(req.session.authorization);
 
     const json_secret_key = process.env.JWT_SECRET_KEY;
     const user_id = jwt.verify(authorization, json_secret_key);
