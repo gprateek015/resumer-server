@@ -66,6 +66,7 @@ export const userUpdateSchema = Joi.object({
   username: Joi.string(),
   city: Joi.string(),
   state: Joi.string(),
+  country: Joi.string(),
   phone: Joi.string(),
   password: Joi.string().min(6),
   profile_links: Joi.array().items(

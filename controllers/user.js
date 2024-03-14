@@ -179,7 +179,8 @@ export const updateUser = async (req, res) => {
     onboarding_completed,
     experiences = [],
     projects = [],
-    educations = []
+    educations = [],
+    certificates = []
   } = req.body;
 
   const skills = await findOrMakeSkills(req.body.skills);
@@ -214,7 +215,8 @@ export const updateUser = async (req, res) => {
     github,
     twitter,
     portfolio,
-    onboarding_completed
+    onboarding_completed,
+    certificates
   });
 
   if (!user) {

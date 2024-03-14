@@ -13,7 +13,8 @@ export const addNewExperienceDB = async ({
   end_date,
   description,
   mode,
-  user
+  user,
+  location
 }) => {
   const newExperience = new Experience({
     company_name,
@@ -22,7 +23,8 @@ export const addNewExperienceDB = async ({
     end_date,
     description,
     mode,
-    user_id: user._id
+    user_id: user._id,
+    location
   });
 
   await newExperience.save();

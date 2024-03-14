@@ -15,8 +15,15 @@ export const fetchExperiences = async (req, res) => {
 
 export const addNewExperience = async (req, res) => {
   const user = req.user;
-  const { company_name, position, start_date, end_date, description, mode } =
-    req.body;
+  const {
+    company_name,
+    position,
+    start_date,
+    end_date,
+    description,
+    mode,
+    location
+  } = req.body;
 
   const newExperience = await addNewExperienceDB({
     company_name,
@@ -25,7 +32,8 @@ export const addNewExperience = async (req, res) => {
     end_date,
     description,
     mode,
-    user
+    user,
+    location
   });
 
   res.status(200).send({

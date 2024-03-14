@@ -62,7 +62,8 @@ export const updateUserDB = async ({
   github,
   twitter,
   portfolio,
-  onboarding_completed
+  onboarding_completed,
+  certificates
 }) => {
   const updateFields = {
     ...(city && { city }),
@@ -77,7 +78,8 @@ export const updateUserDB = async ({
     ...(github && { github }),
     ...(twitter && { twitter }),
     ...(portfolio && { portfolio }),
-    ...(onboarding_completed && { onboarding_completed })
+    ...(onboarding_completed && { onboarding_completed }),
+    ...(certificates && { certificates })
   };
 
   const user = await User.findOneAndUpdate({ _id: user_id }, updateFields, {

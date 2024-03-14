@@ -219,9 +219,17 @@ const addProjectsSection = projects => {
     skills_required = []
   }) => {
     let project = `\\resumeProjectHeading
-    {\\textbf{${name}} $|$ \\emph{${skills_required.join(', ')}}  $|$ {\\href{${
+    {\\textbf{${name}} $|$ \\emph{${skills_required.join(', ')}}{\\href{${
       code_url || live_url || video_url
-    }}{${code_url ? 'Code' : live_url ? 'Live' : 'Video'}}}}{}
+    }}{${
+      code_url
+        ? ' $|$ Code'
+        : live_url
+        ? ' $|$ Live'
+        : video_url
+        ? ' $|$ Video'
+        : ''
+    }}}}{}
     \\resumeItemListStart`;
 
     description?.forEach(point => {
