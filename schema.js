@@ -168,7 +168,7 @@ export const experienceSchema = Joi.object({
     .max(new Date()),
   description: Joi.array().items(Joi.string()),
   mode: Joi.string().valid('onsite', 'remote').required(),
-  location: Joi.string()
+  location: Joi.string().allow(null).allow('')
 });
 export const experienceUpdateSchema = Joi.object({
   company_name: Joi.string(),
@@ -181,7 +181,7 @@ export const experienceUpdateSchema = Joi.object({
     .max(new Date()),
   description: Joi.array().items(Joi.string()),
   mode: Joi.string().valid('onsite', 'remote'),
-  location: Joi.string()
+  location: Joi.string().allow(null).allow('')
 });
 export const experienceDeleteSchema = Joi.object({});
 

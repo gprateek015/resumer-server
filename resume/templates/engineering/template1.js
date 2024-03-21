@@ -286,7 +286,7 @@ const addSkillsSection = ({
     section += addSkill({ name: 'Core Subjects', skills: core_subjects });
   }
   if (languages?.length) {
-    section += addSkill({ name: 'Languages', skills: languages });
+    section += addSkill({ name: 'Programming Languages', skills: languages });
   }
 
   section += '}\n\\end{itemize}';
@@ -368,7 +368,7 @@ const template1 = ({
   experiences = [],
   projects = [],
   technical_skills = [],
-  languages = ['English'],
+  languages = [],
   dev_tools = [],
   core_subjects = [],
   profile_links = [],

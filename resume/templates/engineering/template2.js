@@ -130,7 +130,7 @@ const addSkillsSection = ({
   //   section += addSkill({ name: 'Development', skills: dev_tools });
   // }
   if (languages?.length) {
-    section += addSkill({ name: 'Languages', skills: languages });
+    section += addSkill({ name: 'Programming Languages', skills: languages });
   }
 
   section += '\n \\end{supertabular} \n \\switchcolumn';
@@ -267,7 +267,7 @@ const template2 = ({
   github,
   educations = [],
   technical_skills = [],
-  languages = ['English'],
+  languages = [],
   dev_tools = [],
   core_subjects = [],
   experiences = [],

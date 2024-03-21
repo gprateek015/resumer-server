@@ -139,7 +139,7 @@ export const loginUser = async (req, res) => {
   const { email, password } = req.body;
   const user = await fetchSelfDB({ email });
 
-  if (user) {
+  if (user && user.hash_password) {
     const match = await bcrypt.compare(password, user.hash_password);
     if (match) {
       const json_secret_key = process.env.JWT_SECRET_KEY;
@@ -159,6 +159,8 @@ export const loginUser = async (req, res) => {
       return;
     }
   }
+  if (!user.hash_password)
+    throw new ExpressError('Please login using social handles', 400);
   throw new ExpressError("email and password doesn't match", 400);
 };
 
