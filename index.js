@@ -16,6 +16,7 @@ import skillRouter from './routes/skill.js';
 import projectRouter from './routes/project.js';
 import resumeRouter from './routes/resume.js';
 import optRouter from './routes/otp.js';
+import reviewRouter from './routes/review.js';
 import { setDefaultRCoin } from './utilities/index.js';
 
 if (process.env.NODE_ENV !== 'production') {
@@ -66,6 +67,7 @@ app.use('/project', projectRouter);
 app.use('/skill', skillRouter);
 app.use('/resume', resumeRouter);
 app.use('/otp', optRouter);
+app.use('/review', reviewRouter);
 
 app.get('/', async (req, res) => {
   res.status(200).send('Server up and running!!!');

@@ -112,7 +112,8 @@ const userSchema = new Schema(
       virtuals: true
     },
     versionKey: false,
-    toObject: { virtuals: true }
+    toObject: { virtuals: true },
+    timestamps: true
   }
 );
 
