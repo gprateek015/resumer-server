@@ -149,6 +149,9 @@ export const rewriteResumeData = async ({
   try {
     const startTime = new Date();
     console.log('Started...');
+    console.log(experiences);
+    console.log(projects);
+    console.log(achievements);
     const chatCompletion = await openai.chat.completions.create({
       messages: [
         {
@@ -158,7 +161,7 @@ export const rewriteResumeData = async ({
         },
         {
           role: 'user',
-          content: `This is the the job description - '${job_description}'. These are the details which you have to rewrite - 'work_experiences as experiences' - ${JSON.stringify(
+          content: `This is the the job description - '${job_description}'. These are the details which you have to rewrite and return - 'work_experiences as experiences' - ${JSON.stringify(
             experiences
           )}. 'projects' - ${JSON.stringify(
             projects
@@ -168,7 +171,9 @@ export const rewriteResumeData = async ({
       model: 'gpt-3.5-turbo'
     });
     console.log(`Time took: ${(new Date() - startTime) / 1000} seconds`);
-    return JSON.parse(chatCompletion.choices[0].message.content);
+    const finalData = JSON.parse(chatCompletion.choices[0].message.content);
+    console.log(finalData);
+    return finalData;
   } catch (err) {
     console.log(err);
     throw new ExpressError('AI API Error', 500);
