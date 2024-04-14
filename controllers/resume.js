@@ -78,9 +78,13 @@ export const getNewResumeData = async (req, res) => {
     }
 
     const newData = await rewriteResumeData({ ...userData, job_description });
-    userData.experiences = newData.experiences;
-    userData.projects = newData.projects;
-    userData.achievements = newData.achievements;
+    userData.experiences = userData.experiences.length
+      ? newData.experiences
+      : [];
+    userData.projects = userData.projects.length ? newData.projects : [];
+    userData.achievements = userData.achievements.length
+      ? newData.achievements
+      : [];
 
     await User.findByIdAndUpdate(user_id, {
       r_coins: user.r_coins - process.env.NEW_RESUMER_CHARGES
