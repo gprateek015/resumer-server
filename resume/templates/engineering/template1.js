@@ -269,7 +269,9 @@ const addSkillsSection = ({
     return '';
 
   const addSkill = ({ name, skills }) => {
-    return `\\textbf{${name}}{: ${skills.join(', ')}} \\\\`;
+    return `\\textbf{${name}}{: ${skills
+      .map(skill => serializedescription(skill))
+      .join(', ')}} \\\\`;
   };
 
   let section = `\n\\section{Technical Skills}

@@ -1,7 +1,7 @@
 import engineeringTemplates from './templates/engineering/index.js';
 
 export const serializedescription = point => {
-  const pattern = /[`!@#$%^&*()_\=\[\]{};:\\|<>\/?~]/g;
+  const pattern = /[`&!@#$%^&*()_\=\[\]{};:\\|<>\/?~]/g;
   const matches = [...point.matchAll(pattern)];
   if (matches) {
     let count = 0;
