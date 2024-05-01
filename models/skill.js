@@ -11,6 +11,10 @@ const skillSchema = new Schema(
       type: String,
       required: true,
       enum: ['technical_skills', 'dev_tools', 'core_subjects', 'languages']
+    },
+    approved: {
+      type: Boolean,
+      default: false
     }
   },
   {
