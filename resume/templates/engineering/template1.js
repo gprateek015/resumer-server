@@ -1,4 +1,4 @@
-import { serializedescription } from '../../index.js';
+import { serializeDescription } from '../../index.js';
 
 const addBeforeResumeText = () => {
   const beforeResumeText = `\\documentclass[letterpaper,11pt]{article}
@@ -186,7 +186,7 @@ const addExperienceSection = experiences => {
     experience += '\\resumeItemListStart';
 
     description?.forEach(point => {
-      const serialisedPoint = serializedescription(point);
+      const serialisedPoint = serializeDescription(point);
       experience += `\\resumeItem{${serialisedPoint}}`;
     });
 
@@ -219,21 +219,15 @@ const addProjectsSection = projects => {
     skills_required = []
   }) => {
     let project = `\\resumeProjectHeading
-    {\\textbf{${name}} $|$ \\emph{${skills_required.join(', ')}}{\\href{${
-      code_url || live_url || video_url
-    }}{${
-      code_url
-        ? ' $|$ Code'
-        : live_url
-        ? ' $|$ Live'
-        : video_url
-        ? ' $|$ Video'
-        : ''
-    }}}}{}
+    {\\textbf{${name}} $|$ \\emph{${skills_required.join(', ')}} 
+      ${live_url && `{\\href{${live_url}}{ $|$ Live}}`}
+      ${code_url && `{\\href{${code_url}}{ $|$ Code}}`}
+      ${video_url && `{\\href{${video_url}}{ $|$ Video}}`}
+    }{}
     \\resumeItemListStart`;
 
     description?.forEach(point => {
-      const serialisedPoint = serializedescription(point);
+      const serialisedPoint = serializeDescription(point);
       project += `\\resumeItem {${serialisedPoint}}`;
     });
 
@@ -270,7 +264,7 @@ const addSkillsSection = ({
 
   const addSkill = ({ name, skills }) => {
     return `\\textbf{${name}}{: ${skills
-      .map(skill => serializedescription(skill))
+      .map(skill => serializeDescription(skill))
       .join(', ')}} \\\\`;
   };
 
@@ -320,7 +314,7 @@ const addAchievementsSection = achievements => {
   if (!achievements?.length) return '';
 
   const addAchievement = achievement => {
-    return `\\resumeItem {${serializedescription(achievement)}}`;
+    return `\\resumeItem {${serializeDescription(achievement)}}`;
   };
 
   let section = `\\section{Achievements and Extra Curriculum }
@@ -340,7 +334,7 @@ const addCertificatesSection = certificates => {
   if (!certificates?.length) return '';
 
   const addCertificate = ({ name, link }) => {
-    return `\\item{\\href{${link}}{${serializedescription(name)}}} \n`;
+    return `\\item{\\href{${link}}{${serializeDescription(name)}}} \n`;
   };
 
   let section = `\n \\section{Certificates}

@@ -1,4 +1,4 @@
-import { serializedescription } from '../../index.js';
+import { serializeDescription } from '../../index.js';
 const addBeforeResumeText = () => {
   const beforeResumeText = `\\documentclass[12pt]{article}
     \\usepackage[english]{babel}
@@ -160,7 +160,7 @@ const addExperienceSection = experiences => {
       '\\begin{itemize}[noitemsep,leftmargin=3.5mm,rightmargin=0mm,topsep=6pt]';
 
     description.forEach(point => {
-      const serialisedPoint = serializedescription(point);
+      const serialisedPoint = serializeDescription(point);
       experience += `\\item{${serialisedPoint}}`;
     });
 
@@ -223,7 +223,7 @@ const addProjectsSection = projects => {
     \\begin{itemize}[noitemsep,leftmargin=3.5mm,rightmargin=0mm,topsep=6pt]`;
 
     description.forEach(point => {
-      const serialisedPoint = serializedescription(point);
+      const serialisedPoint = serializeDescription(point);
       project += `\\item {${serialisedPoint}}`;
     });
 
@@ -244,7 +244,7 @@ const addAchievementsSection = achievements => {
   if (!achievements?.length) return '';
 
   const addAchievement = achievement => {
-    return `\\item {${serializedescription(achievement)}}`;
+    return `\\item {${serializeDescription(achievement)}}`;
   };
 
   let section = `\\section{Achievements }
