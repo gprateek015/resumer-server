@@ -1,54 +1,56 @@
-import User from '../models/user.js';
-import ExpressError from '../utilities/express-error.js';
+import UserProfile from "../models/user-profile.js";
+import ExpressError from "../utilities/express-error.js";
 
-export const registerUserDB = async ({
+export const registerUserProfileDB = async ({
+  user_id,
   name,
   email,
   username,
-  hash_password,
   referral_code,
   referred_by,
-  r_coins
+  r_coins,
 }) => {
-  const newUser = new User({
+  const newUserProfile = new UserProfile({
+    user_id,
     name,
     email,
     username,
-    hash_password,
     referral_code,
     referred_by,
-    r_coins
+    r_coins,
   });
 
-  if (!newUser) {
-    throw new ExpressError("User couldn't be registered", 500);
+  if (!newUserProfile) {
+    throw new ExpressError("UserProfile couldn't be registered", 500);
   }
-  await newUser?.save();
+  await newUserProfile?.save();
 
   return {
-    ...newUser?.toJSON(),
+    ...newUserProfile?.toJSON(),
     educations: undefined,
     experiences: undefined,
-    projects: undefined
+    projects: undefined,
   };
 };
 
 export const fetchSelfDB = async ({ user_id, email, username }) => {
-  const user = await User.findOne({
-    $or: [{ _id: user_id }, { email }, { username }]
-  }).populate('skills');
+  const user = await UserProfile.findOne({
+    $or: [{ _id: user_id }, { email }, { username }],
+  }).populate("skills");
 
-  if (!user) throw new ExpressError('User does not exist', 404);
+  if (!user) {
+    throw new ExpressError("User does not exist", 404);
+  }
 
   return {
     ...user?.toJSON(),
     educations: undefined,
     experiences: undefined,
-    projects: undefined
+    projects: undefined,
   };
 };
 
-export const updateUserDB = async ({
+export const updateUserProfileDB = async ({
   user_id,
   name,
   city,
@@ -63,7 +65,7 @@ export const updateUserDB = async ({
   twitter,
   portfolio,
   onboarding_completed,
-  certificates
+  certificates,
 }) => {
   const updateFields = {
     ...(city && { city }),
@@ -79,12 +81,16 @@ export const updateUserDB = async ({
     ...(twitter && { twitter }),
     ...(portfolio && { portfolio }),
     ...(onboarding_completed && { onboarding_completed }),
-    ...(certificates && { certificates })
+    ...(certificates && { certificates }),
   };
 
-  const user = await User.findOneAndUpdate({ _id: user_id }, updateFields, {
-    runValidators: true
-  });
+  const user = await UserProfile.findOneAndUpdate(
+    { _id: user_id },
+    updateFields,
+    {
+      runValidators: true,
+    }
+  );
 
   return user;
 };

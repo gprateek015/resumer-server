@@ -1,19 +1,19 @@
-import Education from '../models/education.js';
-import Experience from '../models/experience.js';
-import Project from '../models/project.js';
-import Resume from '../models/resume.js';
+import Education from "../models/education.js";
+import Experience from "../models/experience.js";
+import Project from "../models/project.js";
+import Resume from "../models/resume.js";
 
 export const saveResumeDB = async ({
   user,
   template_id,
   template_category,
-  data
+  data,
 }) => {
   const resume = new Resume({
     data,
     template_id,
     template_category,
-    user
+    user,
   });
 
   resume.filename = `${user.name}-${resume._id.substr(0, 2)}`;
@@ -37,17 +37,17 @@ export const updateResumeDetailsDB = async ({ resume_id, user_id, data }) => {
   return await Resume.findOneAndUpdate(
     { $and: [{ _id: resume_id, user: user_id }] },
     {
-      data
+      data,
     }
   );
 };
 
 export const deleteExperiencesDB = async ({ user_id }) => {
-  await Experience.deleteMany({ user_id });
+  await Experience.deleteMany({ user: user_id });
 };
 export const deleteEducationsDB = async ({ user_id }) => {
-  await Education.deleteMany({ user_id });
+  await Education.deleteMany({ user: user_id });
 };
 export const deleteProjectsDB = async ({ user_id }) => {
-  await Project.deleteMany({ user_id });
+  await Project.deleteMany({ user: user_id });
 };

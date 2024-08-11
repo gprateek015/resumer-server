@@ -220,9 +220,9 @@ const addProjectsSection = projects => {
   }) => {
     let project = `\\resumeProjectHeading
     {\\textbf{${name}} $|$ \\emph{${skills_required.join(', ')}} 
-      ${live_url && `{\\href{${live_url}}{ $|$ Live}}`}
-      ${code_url && `{\\href{${code_url}}{ $|$ Code}}`}
-      ${video_url && `{\\href{${video_url}}{ $|$ Video}}`}
+      ${live_url ? `{\\href{${live_url}}{ $|$ Live}}` : ''}
+      ${code_url ? `{\\href{${code_url}}{ $|$ Code}}` : ''}
+      ${video_url ? `{\\href{${video_url}}{ $|$ Video}}` : ''}
     }{}
     \\resumeItemListStart`;
 

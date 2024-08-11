@@ -216,10 +216,12 @@ const addProjectsSection = projects => {
     skills_required
   }) => {
     let project = `
-    {\\textbf{${name}} $|$ \\emph{${skills_required.join(', ')}}  $|$ {\\href{${
-      code_url || live_url || video_url
-    }}
-    {${code_url ? 'Code' : live_url ? 'Live' : 'Video'}}}}{}
+    {\\textbf{${name}} $|$ \\emph{${skills_required.join(', ')}} 
+      ${live_url ? `{\\href{${live_url}}{ $|$ Live}}` : ''}
+      ${code_url ? `{\\href{${code_url}}{ $|$ Code}}` : ''}
+      ${video_url ? `{\\href{${video_url}}{ $|$ Video}}` : ''}
+    }{}
+    
     \\begin{itemize}[noitemsep,leftmargin=3.5mm,rightmargin=0mm,topsep=6pt]`;
 
     description.forEach(point => {

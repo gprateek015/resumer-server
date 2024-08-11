@@ -1,50 +1,50 @@
-import { Schema, model } from 'mongoose';
-import User from './user.js';
+import { Schema, model } from "mongoose";
+import UserProfile from "./user-profile.js";
 
 const experienceSchema = new Schema(
   {
     company_name: {
       type: String,
-      required: true
+      required: true,
     },
     position: {
       type: String,
-      required: true
+      required: true,
     },
     start_date: {
       type: String,
-      required: true
+      required: true,
     },
     end_date: {
       type: String,
-      required: false
+      required: false,
     },
     description: [
       {
-        type: String
-      }
+        type: String,
+      },
     ],
     mode: {
       type: String,
       required: true,
-      enum: ['onsite', 'remote', 'hybrid']
+      enum: ["onsite", "remote", "hybrid"],
     },
     location: {
       type: String,
-      required: false
+      required: false,
     },
-    user_id: {
-      type: String,
-      required: true
-    }
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "UserProfile",
+    },
   },
   {
     versionKey: false,
     toJSON: {
-      virtuals: true
-    }
+      virtuals: true,
+    },
   }
 );
 
-const Experience = model('Experience', experienceSchema);
+const Experience = model("Experience", experienceSchema);
 export default Experience;

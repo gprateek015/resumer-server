@@ -1,16 +1,16 @@
-import Skill from '../models/skill.js';
-import PDFParser from 'pdf2json';
-import { generateFromEmail, generateUsername } from 'unique-username-generator';
-import User from '../models/user.js';
-import randomstring from 'randomstring';
-import nodemailer from 'nodemailer';
+import Skill from "../models/skill.js";
+import PDFParser from "pdf2json";
+import { generateFromEmail, generateUsername } from "unique-username-generator";
+import UserProfile from "../models/user-profile.js";
+import randomstring from "randomstring";
+import nodemailer from "nodemailer";
 
 export const skillCompareFunction = (a, b) => {
   if (a.proficiency === b.proficiency) return 0;
   if (
-    (a.proficiency === 'beginner' &&
-      (b.proficiency === 'moderate' || b.proficiency === 'expert')) ||
-    (a.proficiency === 'moderate' && b.proficiency === 'expert')
+    (a.proficiency === "beginner" &&
+      (b.proficiency === "moderate" || b.proficiency === "expert")) ||
+    (a.proficiency === "moderate" && b.proficiency === "expert")
   ) {
     return 1;
   }
@@ -19,13 +19,13 @@ export const skillCompareFunction = (a, b) => {
 
 export const findOrMakeSkills = (data = []) => {
   return Promise.all(
-    data.map(async skill => {
+    data.map(async (skill) => {
       let sk = null;
       if (skill?._id) {
         sk = await Skill.findById(skill._id);
         if (!sk) {
           throw new ExpressError(
-            'Skill Id is invalid. Please add a new skill!'
+            "Skill Id is invalid. Please add a new skill!"
           );
         }
       } else {
@@ -43,57 +43,59 @@ export const findOrMakeSkills = (data = []) => {
 };
 
 export const updateEducationsForResume = (educations = []) =>
-  educations.map(education => {
+  educations.map((education) => {
     const new_edu = education;
     switch (new_edu.level) {
-      case 'lower_secondary': {
-        new_edu.education_type = 'Lower Secondary';
+      case "lower_secondary": {
+        new_edu.education_type = "Lower Secondary";
         break;
       }
-      case 'senior_secondary': {
+      case "senior_secondary": {
         new_edu.education_type = `Senior Secondary in ${new_edu.specialisation}`;
         break;
       }
-      case 'diploma': {
+      case "diploma": {
         new_edu.education_type = `Diploma in ${new_edu.specialisation}`;
         break;
       }
-      case 'graduation': {
+      case "graduation": {
         new_edu.education_type = `Bachelors in ${new_edu.specialisation}`;
         break;
       }
-      case 'post_graduation': {
+      case "post_graduation": {
         new_edu.education_type = `Post Graduation in ${new_edu.specialisation}`;
         break;
       }
       default:
-        new_edu.education_type = 'Education level missing';
+        new_edu.education_type = "Education level missing";
     }
     return new_edu;
   });
 
 const months = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December'
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
 ];
 
 export const updateExperiencesForResume = (experiences = []) =>
-  experiences.map(experience => {
+  experiences.map((experience) => {
     const start_date = new Date(experience.start_date);
     const end_date = experience.end_date && new Date(experience.end_date);
     const new_exp = {
       ...experience,
-      start_date: `${months[start_date.getMonth()]} ${start_date.getFullYear()}`
+      start_date: `${
+        months[start_date.getMonth()]
+      } ${start_date.getFullYear()}`,
     };
     if (end_date) {
       new_exp.end_date = `${
@@ -103,12 +105,12 @@ export const updateExperiencesForResume = (experiences = []) =>
     return new_exp;
   });
 
-export const parsePDF = dataBuffer => {
+export const parsePDF = (dataBuffer) => {
   return new Promise((resolve, reject) => {
     const pdfParser = new PDFParser(this, 1);
 
-    pdfParser.on('pdfParser_dataError', reject);
-    pdfParser.on('pdfParser_dataReady', () =>
+    pdfParser.on("pdfParser_dataError", reject);
+    pdfParser.on("pdfParser_dataReady", () =>
       resolve(pdfParser.getRawTextContent())
     );
 
@@ -116,68 +118,70 @@ export const parsePDF = dataBuffer => {
   });
 };
 
-export const generateNewUsername = async ({ email }) => {
+export const generateNewUserProfilename = async ({ email }) => {
   if (!email) return generateUsername();
 
   let username = generateFromEmail(email, 3);
-  const user = await User.findOne({ username });
+  const user = await UserProfile.findOne({ username });
   if (user) {
     username = generateUsername();
   }
   return username;
 };
 
-export const formatSkills = skills => {
+export const formatSkills = (skills) => {
   const technical_skills = skills
-    .filter(skill => skill.type === 'technical_skills')
-    .map(skill => ({ name: skill.name, _id: skill._id.toString() }));
+    .filter((skill) => skill.type === "technical_skills")
+    .map((skill) => ({ name: skill.name, _id: skill._id.toString() }));
   const dev_tools = skills
-    .filter(skill => skill.type === 'dev_tools')
-    .map(skill => ({ name: skill.name, _id: skill._id.toString() }));
+    .filter((skill) => skill.type === "dev_tools")
+    .map((skill) => ({ name: skill.name, _id: skill._id.toString() }));
   const core_subjects = skills
-    .filter(skill => skill.type === 'core_subjects')
-    .map(skill => ({ name: skill.name, _id: skill._id.toString() }));
+    .filter((skill) => skill.type === "core_subjects")
+    .map((skill) => ({ name: skill.name, _id: skill._id.toString() }));
   const languages = skills
-    .filter(skill => skill.type === 'languages')
-    .map(skill => ({ name: skill.name, _id: skill._id.toString() }));
+    .filter((skill) => skill.type === "languages")
+    .map((skill) => ({ name: skill.name, _id: skill._id.toString() }));
 
   return {
     ...(technical_skills?.length && { technical_skills }),
     ...(dev_tools?.length && { dev_tools }),
     ...(core_subjects?.length && { core_subjects }),
-    ...(languages?.length && { languages })
+    ...(languages?.length && { languages }),
   };
 };
 
 export const generateRandomOTP = ({ length }) => {
   return randomstring.generate({
     length: length || 6,
-    charset: 'numeric'
+    charset: "numeric",
   });
 };
 
 export const sendMail = async ({ email, message, subject }) => {
   let transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
+    host: "smtp.gmail.com",
     port: 587,
     secure: false,
     auth: {
-      user: 'airesumer1@gmail.com',
-      pass: process.env.GOOGLE_PASSWORD
-    }
+      user: "airesumer1@gmail.com",
+      pass: process.env.GOOGLE_PASSWORD,
+    },
   });
 
   let info = await transporter.sendMail({
-    from: 'airesumer1@gmail.com',
+    from: "airesumer1@gmail.com",
     to: email,
     subject,
-    text: message
+    text: message,
   });
 
   return `Mail sent: ${info.messageId}`;
 };
 
 export const setDefaultRCoin = async () => {
-  console.log('running');
-  await User.updateRCoinsForAllUsers(process.env.TOTAL_RCOIN_TO_GIVE);
+  console.log("running");
+  await UserProfile.updateRCoinsForAllUserProfiles(
+    process.env.TOTAL_RCOIN_TO_GIVE
+  );
 };
