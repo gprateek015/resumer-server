@@ -1,7 +1,7 @@
-import Education from '../models/education.js';
+import Education from "../models/education.js";
 
-export const fetchEducationsFromDB = async user => {
-  const educations = await Education.find({ user_id: user._id });
+export const fetchEducationsFromDB = async (user) => {
+  const educations = await Education.find({ user: user._id });
   return educations;
 };
 
@@ -15,10 +15,10 @@ export const addNewEducationDB = async ({
   specialisation,
   maximum_score,
   scoring_type,
-  degree
+  degree,
 }) => {
   const newEducation = new Education({
-    user_id: user._id,
+    user: user,
     level,
     institute_name,
     start_year,
@@ -27,7 +27,7 @@ export const addNewEducationDB = async ({
     specialisation,
     maximum_score,
     scoring_type,
-    degree
+    degree,
   });
 
   await newEducation.save();
@@ -37,7 +37,7 @@ export const addNewEducationDB = async ({
 
 export const deleteEducationDB = async ({ education_id, user_id }) => {
   await Education.findOneAndDelete({
-    $and: [{ _id: education_id }, { user_id }]
+    $and: [{ _id: education_id }, { user: user_id }],
   });
 };
 
@@ -52,10 +52,10 @@ export const updateEducationDB = async ({
   scoring_type,
   education_id,
   user_id,
-  degree
+  degree,
 }) => {
   const education = await Education.findOneAndUpdate(
-    { $and: [{ _id: education_id }, { user_id }] },
+    { $and: [{ _id: education_id }, { user: user_id }] },
     {
       level,
       institute_name,
@@ -65,7 +65,7 @@ export const updateEducationDB = async ({
       specialisation,
       maximum_score,
       scoring_type,
-      degree
+      degree,
     },
     { new: true, runValidators: true }
   );

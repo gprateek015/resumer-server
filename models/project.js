@@ -1,37 +1,37 @@
-import { Schema, model } from 'mongoose';
-import User from './user.js';
+import { Schema, model } from "mongoose";
+import UserProfile from "./user-profile.js";
 
 const projectSchema = new Schema(
   {
     name: {
       type: String,
-      required: true
+      required: true,
     },
     skills_required: [
       {
-        type: String
-      }
+        type: String,
+      },
     ],
     description: [
       {
-        type: String
-      }
+        type: String,
+      },
     ],
     code_url: String,
     live_url: String,
     video_url: String,
-    user_id: {
-      type: String,
-      required: true
-    }
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "UserProfile",
+    },
   },
   {
     versionKey: false,
     toJSON: {
-      virtuals: true
-    }
+      virtuals: true,
+    },
   }
 );
 
-const Project = model('Project', projectSchema);
+const Project = model("Project", projectSchema);
 export default Project;

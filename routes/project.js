@@ -1,23 +1,23 @@
-import express from 'express';
+import express from "express";
 import {
   addNewProject,
   deleteProject,
   fetchProjects,
-  updateProject
-} from '../controllers/project.js';
+  updateProject,
+} from "../controllers/project.js";
 import {
   authenticateUser,
   validateProject,
   validateProjectDelete,
-  validateProjectUpdate
-} from '../middleware.js';
-import catchAsync from '../utilities/catch-async.js';
-import catchValidationAsync from '../utilities/catch-validation-async.js';
+  validateProjectUpdate,
+} from "../middleware.js";
+import catchAsync from "../utilities/catch-async.js";
+import catchValidationAsync from "../utilities/catch-validation-async.js";
 
 const router = express.Router();
 
 router
-  .route('/')
+  .route("/")
   .get(authenticateUser, catchAsync(fetchProjects))
   .post(
     authenticateUser,
@@ -25,7 +25,7 @@ router
     catchAsync(addNewProject)
   );
 router
-  .route('/:project_id')
+  .route("/:project_id")
   .delete(
     authenticateUser,
     catchValidationAsync(validateProjectDelete),

@@ -1,5 +1,5 @@
-import { Schema, model } from 'mongoose';
-import User from './user.js';
+import { Schema, model } from "mongoose";
+import UserProfile from "./user-profile.js";
 
 const educationSchema = new Schema(
   {
@@ -7,60 +7,60 @@ const educationSchema = new Schema(
       type: String,
       required: false, // Should be true
       enum: [
-        'lower_secondary',
-        'senior_secondary',
-        'diploma',
-        'graduation',
-        'post_graduation'
-      ]
+        "lower_secondary",
+        "senior_secondary",
+        "diploma",
+        "graduation",
+        "post_graduation",
+      ],
     },
     institute_name: {
       type: String,
-      required: true
+      required: true,
     },
     start_year: {
       type: Number,
-      required: false
+      required: false,
     },
     end_year: {
       type: Number,
-      required: true
+      required: true,
     },
     score: {
       type: Number,
-      required: true
+      required: true,
     },
     scoring_type: {
       type: String,
       required: true,
-      enum: ['cgpa', 'percentage']
+      enum: ["cgpa", "percentage"],
     },
     maximum_score: {
       type: Number,
-      required: true
+      required: true,
     },
     specialisation: {
       // required for levels senior_secondary | diploma | graduation | post_graduation
       type: String,
-      required: false
+      required: false,
     },
     degree: {
       // required for levels graduation | post_graduation
       type: String,
-      required: false
+      required: false,
     },
-    user_id: {
-      type: String,
-      required: true
-    }
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "UserProfile",
+    },
   },
   {
     versionKey: 0,
     toJSON: {
-      virtuals: true
-    }
+      virtuals: true,
+    },
   }
 );
 
-const Education = model('Education', educationSchema);
+const Education = model("Education", educationSchema);
 export default Education;

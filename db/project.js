@@ -1,8 +1,8 @@
-import Project from '../models/project.js';
-import User from '../models/user.js';
+import Project from "../models/project.js";
+import UserProfile from "../models/user-profile.js";
 
-export const fetchProjectsFromDB = async user => {
-  const projects = await Project.find({ user_id: user._id });
+export const fetchProjectsFromDB = async (user) => {
+  const projects = await Project.find({ user: user._id });
   return projects;
 };
 
@@ -13,7 +13,7 @@ export const addNewProjectDB = async ({
   live_url,
   video_url,
   code_url,
-  user
+  user,
 }) => {
   const newProject = new Project({
     name,
@@ -22,7 +22,7 @@ export const addNewProjectDB = async ({
     live_url,
     video_url,
     code_url,
-    user_id: user._id
+    user: user,
   });
 
   await newProject.save();
@@ -30,7 +30,9 @@ export const addNewProjectDB = async ({
   return newProject;
 };
 export const deleteProjectDB = async ({ project_id, user_id }) => {
-  await Project.findOneAndDelete({ $and: [{ _id: project_id }, { user_id }] });
+  await Project.findOneAndDelete({
+    $and: [{ _id: project_id }, { user: user_id }],
+  });
 };
 
 export const updateProjectDB = async ({
@@ -41,10 +43,10 @@ export const updateProjectDB = async ({
   video_url,
   code_url,
   project_id,
-  user_id
+  user_id,
 }) => {
   const project = await Project.findOneAndUpdate(
-    { $and: [{ _id: project_id }, { user_id }] },
+    { $and: [{ _id: project_id }, { user: user_id }] },
     { name, skills_required, description, live_url, video_url, code_url },
     { new: true, runValidators: true }
   );

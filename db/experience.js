@@ -1,8 +1,8 @@
-import Experience from '../models/experience.js';
-import User from '../models/user.js';
+import Experience from "../models/experience.js";
+import UserProfile from "../models/user-profile.js";
 
-export const fetchExperiencesFromDB = async user => {
-  const experiences = await Experience.find({ user_id: user._id });
+export const fetchExperiencesFromDB = async (user) => {
+  const experiences = await Experience.find({ user: user._id });
   return experiences;
 };
 
@@ -14,7 +14,7 @@ export const addNewExperienceDB = async ({
   description,
   mode,
   user,
-  location
+  location,
 }) => {
   const newExperience = new Experience({
     company_name,
@@ -23,8 +23,8 @@ export const addNewExperienceDB = async ({
     end_date,
     description,
     mode,
-    user_id: user._id,
-    location
+    user: user,
+    location,
   });
 
   await newExperience.save();
@@ -33,7 +33,7 @@ export const addNewExperienceDB = async ({
 
 export const deleteExperienceDB = async ({ experience_id, user_id }) => {
   await Experience.findOneAndDelete({
-    $and: [{ _id: experience_id }, { user_id }]
+    $and: [{ _id: experience_id }, { user: user_id }],
   });
 };
 
@@ -46,10 +46,10 @@ export const updateExperienceDB = async ({
   description,
   location,
   mode,
-  user_id
+  user_id,
 }) => {
   return await Experience.findOneAndUpdate(
-    { $and: [{ _id: experience_id }, { user_id }] },
+    { $and: [{ _id: experience_id }, { user: user_id }] },
     {
       company_name,
       position,
@@ -57,7 +57,7 @@ export const updateExperienceDB = async ({
       end_date,
       description,
       mode,
-      location
+      location,
     },
     { new: true, runValidators: true }
   );
