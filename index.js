@@ -46,7 +46,7 @@ app.use(
     origin: [
       "https://resumer.cloud",
       "https://www.resumer.cloud",
-      "https://airesumer.vercel.app", // develop
+      "https://resumercloud.vercel.app", // develop
       "http://localhost:3000",
       "chrome-extension://*",
     ],
