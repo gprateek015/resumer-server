@@ -47,6 +47,7 @@ app.use(
       "https://resumer.cloud",
       "https://www.resumer.cloud",
       "https://resumercloud.vercel.app", // develop
+      "https://resumer.prateeklab.com",
       "http://localhost:3000",
       "chrome-extension://*",
     ],
