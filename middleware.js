@@ -1,6 +1,4 @@
-import jwt from "jsonwebtoken";
-import jose from "node-jose";
-const { JWK, JWE } = jose;
+import * as jose from "jose";
 
 import {
   userSchema,
@@ -34,8 +32,10 @@ export const authenticateUser = async (req, res, next) => {
     if (!authorization) throw new Error();
 
     const json_secret_key = process.env.JWT_SECRET_KEY;
-    const data = jwt.verify(authorization, json_secret_key);
-    const user = await User.findOne({ email: data.email });
+    const secret = new TextEncoder().encode(json_secret_key);
+    const { payload } = await jose.jwtVerify(authorization, secret);
+
+    const user = await User.findOne({ email: payload.email });
     if (!user) throw new Error();
     const userProfile = await UserProfile.findOne({ user_id: user._id });
 
@@ -57,9 +57,10 @@ export const authenticateAndCreateUser = async (req, res, next) => {
     if (!authorization) throw new Error("");
 
     const json_secret_key = process.env.JWT_SECRET_KEY;
-    const data = jwt.verify(authorization, json_secret_key);
+    const secret = new TextEncoder().encode(json_secret_key);
+    const { payload } = await jose.jwtVerify(authorization, secret);
 
-    const user = await User.findOne({ email: data.email });
+    const user = await User.findOne({ email: payload.email });
     if (!user) throw new Error();
     const userProfile = await UserProfile.findOne({ user_id: user._id });
 

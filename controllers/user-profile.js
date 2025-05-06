@@ -1,5 +1,4 @@
 import referralCodeGenerator from "referral-code-generator";
-import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
 import UserProfile from "../models/user-profile.js";
