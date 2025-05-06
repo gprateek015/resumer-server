@@ -65,7 +65,7 @@ app.use("/otp", optRouter);
 app.use("/review", reviewRouter);
 
 app.get("/", async (req, res) => {
-  res.status(200).send("Server up and running!!!");
+  res.status(200).send("Server up and running!!");
 });
 
 app.all("*", async (req, res) => {
