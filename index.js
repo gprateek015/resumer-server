@@ -19,6 +19,7 @@ import resumeRouter from "./routes/resume.js";
 import optRouter from "./routes/otp.js";
 import reviewRouter from "./routes/review.js";
 import { setDefaultRCoin } from "./utilities/index.js";
+import { GoogleGenAI } from "@google/genai";
 
 if (process.env.NODE_ENV !== "production") {
   dotenv.config();
@@ -31,6 +32,10 @@ mongoose.connect(process.env.DB_URI).then(
 
 export const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
+});
+
+export const genai = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY,
 });
 
 export const s3_client = new S3Client({
